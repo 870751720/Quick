@@ -1,7 +1,11 @@
-let context;
-const ctx=()=>context??=new AudioContext();
+let context, master;
+const ctx=()=>{if(!context){context=new AudioContext();master=context.createGain();master.connect(context.destination);applyAudioSettings()}return context};
+const settings=()=>{try{return JSON.parse(localStorage.getItem('codename-world.audio')||'{}')}catch{return {}}};
+function applyAudioSettings(){if(!master)return;const value=settings();master.gain.value=value.muted?0:Math.max(0,Math.min(1,value.volume??.7))}
+export function setAudioSettings(value){localStorage.setItem('codename-world.audio',JSON.stringify(value));applyAudioSettings()}
+export function getAudioSettings(){const value=settings();return {volume:value.volume??.7,muted:!!value.muted}}
 export function unlockAudio(){const c=ctx();if(c.state==='suspended')c.resume()}
-function tone(from,to,duration,type='sine',gain=.08,delay=0){const c=ctx(),o=c.createOscillator(),g=c.createGain(),start=c.currentTime+delay;o.type=type;o.frequency.setValueAtTime(from,start);o.frequency.exponentialRampToValueAtTime(Math.max(20,to),start+duration);g.gain.setValueAtTime(gain,start);g.gain.exponentialRampToValueAtTime(.001,start+duration);o.connect(g).connect(c.destination);o.start(start);o.stop(start+duration)}
+function tone(from,to,duration,type='sine',gain=.08,delay=0){const c=ctx(),o=c.createOscillator(),g=c.createGain(),start=c.currentTime+delay;o.type=type;o.frequency.setValueAtTime(from,start);o.frequency.exponentialRampToValueAtTime(Math.max(20,to),start+duration);g.gain.setValueAtTime(gain,start);g.gain.exponentialRampToValueAtTime(.001,start+duration);o.connect(g).connect(master);o.start(start);o.stop(start+duration)}
 export const sfx={
   attack(){tone(520,110,.13,'sawtooth',.045)},
   hit(){tone(120,45,.11,'square',.09);tone(900,180,.07,'sawtooth',.025)},

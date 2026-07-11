@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=15";
-import { sfx, unlockAudio } from "./audio.js?v=15";
+} from "./combat.js?v=16";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings } from "./audio.js?v=16";
 import {
   POTION,
   createInventory,
@@ -26,8 +26,8 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=15";
-import { createGmRegistry } from "./gm.js?v=15";
+} from "./inventory.js?v=16";
+import { createGmRegistry } from "./gm.js?v=16";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -338,13 +338,56 @@ canvas.addEventListener("click", (event) => {
     sfx.coin();
   }
 });
-document.querySelector("button").onclick = () => {
+const SAVE_KEY = "codename-world.save.v1";
+const menu = document.querySelector("#main-menu"),
+  continueButton = document.querySelector("#continue-game"),
+  menuHint = document.querySelector("#menu-hint"),
+  settingsPanel = document.querySelector("#settings-panel"),
+  volumeInput = document.querySelector("#master-volume"),
+  volumeValue = document.querySelector("#volume-value"),
+  muteInput = document.querySelector("#mute-audio");
+const hasSave = () => !!localStorage.getItem(SAVE_KEY);
+const persistGame = () => {
+  if (!running) return;
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 1, player: { x: player.x, y: player.y, hp: player.hp, maxHp: player.maxHp, gold: player.gold, level: player.level, xp: player.xp }, inventory }));
+};
+const restoreGame = () => {
+  try {
+    const save = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (save?.version !== 1 || !save.player || !save.inventory) return false;
+    reset();
+    Object.assign(player, save.player);
+    inventory = save.inventory;
+    return true;
+  } catch { return false; }
+};
+const enterGame = () => {
   unlockAudio();
-  document.querySelector("section").classList.add("hidden");
+  menu.classList.add("hidden");
   running = true;
   last = performance.now();
   requestAnimationFrame(loop);
 };
+continueButton.disabled = !hasSave();
+continueButton.title = hasSave() ? "继续上次进度" : "暂无存档";
+continueButton.onclick = () => {
+  if (restoreGame()) enterGame();
+  else menuHint.textContent = "存档无法读取，请开始新游戏";
+};
+document.querySelector("#new-game").onclick = () => {
+  if (hasSave() && !confirm("开始新游戏将覆盖当前进度，是否继续？")) return;
+  localStorage.removeItem(SAVE_KEY);
+  reset();
+  enterGame();
+};
+document.querySelector("#open-settings").onclick = () => { settingsPanel.classList.remove("hidden"); settingsPanel.setAttribute("aria-hidden", "false"); };
+document.querySelector("#close-settings").onclick = () => { settingsPanel.classList.add("hidden"); settingsPanel.setAttribute("aria-hidden", "true"); };
+const audioSettings = getAudioSettings();
+volumeInput.value = Math.round(audioSettings.volume * 100); muteInput.checked = audioSettings.muted; volumeValue.value = `${volumeInput.value}%`;
+const updateAudioSettings = () => { volumeValue.value = `${volumeInput.value}%`; setAudioSettings({ volume: Number(volumeInput.value) / 100, muted: muteInput.checked }); };
+volumeInput.oninput = updateAudioSettings; muteInput.onchange = updateAudioSettings;
+addEventListener("beforeunload", persistGame);
+setInterval(persistGame, 5000);
 
 function spawnEnemy() {
   spawned++;

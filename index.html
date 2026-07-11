@@ -1,1 +1,41 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>余烬荒原</title><link rel="icon" href="favicon.svg?v=15" type="image/svg+xml"><link rel="stylesheet" href="styles.css?v=15"></head><body><main><canvas id="game" width="1280" height="720"></canvas><section id="intro"><h1>余烬荒原</h1><p>进入侵蚀区域迎战荒兽，向左侧商人出售战利品。</p><p>WASD 移动　E 对话　鼠标瞄准　左键/空格攻击　右键/Shift 冲刺　Q 回血　B 背包　R 重试</p><button>进入荒野</button></section></main><script type="module" src="src/game.js?v=15"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>代号：世界</title>
+    <link rel="icon" href="favicon.svg?v=16" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=16">
+  </head>
+  <body>
+    <main>
+      <canvas id="game" width="1280" height="720"></canvas>
+      <section id="main-menu" aria-label="主菜单">
+        <div class="menu-vignette"></div>
+        <div class="title-block">
+          <p class="eyebrow">A DARK FANTASY RPG</p>
+          <h1>代号：世界</h1>
+          <div class="title-rule"></div>
+        </div>
+        <nav class="menu-actions">
+          <button id="continue-game" type="button">继续游戏</button>
+          <button id="new-game" type="button">开始游戏</button>
+          <button id="open-settings" type="button">设置</button>
+        </nav>
+        <p id="menu-hint" class="menu-hint">故事尚未开始</p>
+        <p class="build-mark">PROTOTYPE · 代号：世界</p>
+      </section>
+      <section id="settings-panel" class="modal hidden" aria-label="设置" aria-hidden="true">
+        <div class="settings-card">
+          <p class="eyebrow">SETTINGS</p>
+          <h2>设置</h2>
+          <label for="master-volume">总音量 <output id="volume-value">70%</output></label>
+          <input id="master-volume" type="range" min="0" max="100" value="70">
+          <label class="toggle-row"><input id="mute-audio" type="checkbox"> 静音</label>
+          <button id="close-settings" type="button">返回</button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="src/game.js?v=16"></script>
+  </body>
+</html>
