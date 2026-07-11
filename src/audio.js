@@ -7,6 +7,9 @@ export const sfx={
   hit(){tone(120,45,.11,'square',.09);tone(900,180,.07,'sawtooth',.025)},
   dash(){tone(240,70,.1,'triangle',.035)},
   hurt(){tone(170,55,.2,'sawtooth',.07)},
+  drop(){tone(760,420,.09,'square',.025);tone(980,520,.12,'triangle',.025,.05)},
+  coin(){tone(880,1320,.1,'square',.035);tone(1320,1760,.08,'triangle',.025,.07)},
+  heal(){tone(420,720,.18,'sine',.05);tone(620,980,.24,'triangle',.035,.1)},
   victory(){tone(330,440,.18,'triangle',.05);tone(440,660,.28,'triangle',.05,.16)},
   defeat(){tone(180,120,.25,'triangle',.06);tone(120,55,.45,'sawtooth',.045,.2)}
 };

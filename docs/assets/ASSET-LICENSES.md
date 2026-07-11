@@ -4,7 +4,7 @@
 
 ## Puny Characters
 
-- 文件：`assets/characters/warrior-blue.png`、`assets/characters/orc-soldier-red.png`、`assets/environment/puny/*`
+- 文件：`assets/characters/warrior-blue.png`、`assets/characters/orc-soldier-red.png`、`assets/characters/orc-grunt.png`、`assets/environment/puny/*`
 - 作者：Shade
 - 来源：https://opengameart.org/content/puny-characters
 - 原始包：https://opengameart.org/sites/default/files/puny-charactersorcs_included.zip
