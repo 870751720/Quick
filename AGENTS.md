@@ -26,6 +26,8 @@
 ### 2.1 GitHub 凭据位置与安全要求
 
 - GitHub 凭据统一通过 GitHub CLI（`gh auth login`）保存到操作系统凭据库；Agent 通过 `gh` 使用凭据，不在项目文件中保存或读取明文 Token。
+- 若 GitHub CLI 暂不可用，本项目约定本地 GitHub Token 文件位于 `D:\Quick\token`。该文件仅用于本机鉴权，已由根目录 `.gitignore` 忽略；不得提交、复制到其他项目文件或在输出中展示其内容。
+- `D:\Quick\token` 中只能存放未泄露且仍有效的 Token。Agent 使用前应避免回显，并在发现凭据已暴露、失效或权限过宽时停止使用并要求轮换。
 - `AGENTS.md`、源码、配置文件、提交记录、构建日志和对话中均不得记录真实 Token、密码、私钥或其他敏感值。
 - GitHub Actions 运行时所需的第三方凭据必须保存为 Repository、Environment 或 Organization Secrets，并在工作流中通过 `secrets` 上下文引用。
 - 本地工具确需环境变量时，仅记录变量名和配置方法，不记录变量值；优先使用当前进程级变量或操作系统安全存储，禁止提交包含真实值的 `.env` 文件。
