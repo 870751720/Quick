@@ -53,6 +53,8 @@
 
 ## 场景 101 主角房间
 
+> 状态：历史概念资产。自 2026-07-12 起不再参与运行时绘制，仅保留用于构图参考。
+
 - 文件：`assets/scenes/room-101.png`
 - 用途：第一幕主角房间的可玩场景底图
 - 作者/来源：OpenAI 图像生成工具，依据项目原创提示词生成
@@ -60,3 +62,27 @@
 - 许可与使用范围：项目生成资产，可在本项目中使用、修改与分发；无需第三方署名
 - 提示词摘要：严格俯视 RPG 视角的落魄农户单间，包含床、空粮柜、空碗、水杯、冷壁炉、破窗、农具、旧外套和出口；16 位像素画、清晰可行走空间，不含人物、文字、水印或现代物件
 - 工程检查：PNG，1672×941，约 1.7 MB；无脚本或可执行内容；作为场景底图缩放至 1280×720，交互热点、碰撞和角色由代码独立管理
+
+## Kenney Roguelike Indoor Pack
+
+- 文件：`assets/environment/interior/kenney-indoor.png`、`KENNEY-LICENSE.txt`
+- 用途：场景 `101` 的粮柜、旧外套及可扩展室内家具 Sprite
+- 作者：Kenney
+- 来源：https://opengameart.org/content/roguelike-indoor-pack
+- 原始文件：https://opengameart.org/sites/default/files/Roguelike%20Indoor%20pack.zip
+- 许可证：CC0 1.0 Universal（https://creativecommons.org/publicdomain/zero/1.0/）
+- 下载时间：2026-07-12
+- 使用范围：允许商业与非商业使用、修改和再分发；无需署名
+- 工程检查：ZIP 仅包含 PNG、文本许可证与网页快捷方式；运行时仅纳入透明 PNG 和许可证文本，不执行任何外部内容
+
+## Christmas Village Asset Pack
+
+- 文件：`assets/environment/interior/floor-tile.png`、`floor-tileset.png`、`wall-tileset.png`、`fireplace.png`、`table.png`、`chair.png`、`rug.png`、`bench.png`、`couch.png`
+- 用途：场景 `101` 的木地板、墙体、壁炉、桌椅、地毯及床体组合
+- 作者：HaywardMorihara（murphysdad）
+- 来源：https://opengameart.org/content/christmas-village-asset-pack
+- 原始文件：https://opengameart.org/sites/default/files/christmas-village-asset-pack_0.zip
+- 许可证：CC0 1.0 Universal（https://creativecommons.org/publicdomain/zero/1.0/）
+- 下载时间：2026-07-12
+- 使用范围：允许商业与非商业使用、修改和再分发；无需署名
+- 工程检查：ZIP 仅包含小尺寸 PNG；未纳入预览字体或其他第三方内容，运行时图片合计低于 10 KB

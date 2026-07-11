@@ -2,16 +2,19 @@ export const SCENE = Object.freeze({ VILLAGE_OUTSKIRTS: 100, PLAYER_ROOM: 101, C
 
 export const createPlayerRoomScene = (skip = false) => ({ id: SCENE.PLAYER_ROOM, elapsed: skip ? 10 : 0, phase: skip ? "play" : "fade", bubble: "" });
 
-export const ROOM_COLLIDERS = Object.freeze([
-  // 房间外墙与窗下墙面：碰撞坐标以角色脚点为基准，而不是图片的透明边界。
-  { x: 0, y: 0, w: 1280, h: 45 }, { x: 0, y: 0, w: 235, h: 720 }, { x: 1105, y: 0, w: 175, h: 720 },
-  { x: 495, y: 45, w: 285, h: 195 },
-  { x: 0, y: 675, w: 790, h: 45 }, { x: 945, y: 675, w: 335, h: 45 },
-  // 家具只取落地/不可穿越部分，投影出来的高处由前景遮挡负责。
-  { x: 298, y: 82, w: 227, h: 188 }, { x: 390, y: 340, w: 125, h: 235 },
-  { x: 780, y: 78, w: 194, h: 222 }, { x: 970, y: 92, w: 135, h: 235 },
-  { x: 850, y: 435, w: 145, h: 80 }, { x: 1045, y: 535, w: 60, h: 125 },
+export const ROOM_OBJECTS=Object.freeze([
+  {id:'cupboard',x:250,y:130,w:170,h:120,sortY:250,collision:{x:250,y:174,w:170,h:76}},
+  {id:'bed',x:265,y:300,w:145,h:240,sortY:540,collision:{x:265,y:330,w:145,h:210}},
+  {id:'fireplace',x:770,y:130,w:155,h:120,sortY:250,collision:{x:770,y:155,w:155,h:95}},
+  {id:'tools',x:940,y:145,w:115,h:95,sortY:240,collision:{x:940,y:165,w:115,h:75}},
+  {id:'table',x:790,y:335,w:175,h:150,sortY:485,collision:{x:790,y:390,w:175,h:95}},
+  {id:'coat',x:1015,y:455,w:60,h:155,sortY:610,collision:{x:1015,y:480,w:60,h:130}},
 ]);
+const ROOM_WALL_COLLIDERS=Object.freeze([
+  {x:0,y:0,w:1280,h:120},{x:0,y:0,w:170,h:720},{x:1110,y:0,w:170,h:720},
+  {x:0,y:680,w:800,h:40},{x:960,y:680,w:320,h:40},
+]);
+export const ROOM_COLLIDERS=Object.freeze([...ROOM_WALL_COLLIDERS,...ROOM_OBJECTS.map(object=>object.collision)]);
 
 export function roomPositionBlocked(x, y, radius = 25) {
   return ROOM_COLLIDERS.some((box) => x + radius > box.x && x - radius < box.x + box.w && y + radius > box.y && y - radius < box.y + box.h);
@@ -31,13 +34,6 @@ export function updatePlayerRoomScene(scene, dt, player, keys) {
   player.moving=!!(x||y);if(!roomPositionBlocked(nextX,player.y))player.x=nextX;if(!roomPositionBlocked(player.x,nextY))player.y=nextY;if(x||y)player.facing=Math.atan2(y,x);
   return player.x>790&&player.x<945&&player.y>640;
 }
-
-export function interactPlayerRoom(scene, player) {
-  const points=[{x:300,y:205,text:"空的。连一粒麦子都没有。"},{x:880,y:390,text:"碗底的麦糊已经硬了。"},{x:930,y:160,text:"冷透的灰。昨晚没有生火。"},{x:400,y:430,text:"这张床……还有这双手，都不是我的。"}];
-  const hit=points.find(p=>Math.hypot(player.x-p.x,player.y-p.y)<125);scene.bubble=hit?.text||"没什么值得带走的。";scene.bubbleUntil=scene.elapsed+3.5;
-}
-
-export function drawPlayerRoomScene(ctx,scene,player,art){ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(art.room,0,0,1280,720);const wake=Math.max(0,Math.min(1,(scene.elapsed-6)/3));ctx.fillStyle="rgba(0,0,0,.24)";ctx.beginPath();ctx.ellipse(player.x,player.y+24,15,5,0,0,7);ctx.fill();ctx.save();ctx.translate(player.x,player.y);ctx.rotate((1-wake)*Math.PI/2);ctx.drawImage(art.hero,0,0,32,32,-37,-37,74,74);ctx.restore();let words="";if(scene.phase==='sleep'&&scene.elapsed>3)words="肚子饿饿的……";else if(scene.phase==='wake')words="这是……谁的房间？";else if(scene.bubbleUntil>scene.elapsed)words=scene.bubble;else if(scene.phase==='play'&&scene.elapsed<14)words="先下床看看。";if(words)bubble(ctx,player.x,player.y,words);if(scene.phase==='play'&&scene.elapsed<16){ctx.fillStyle='rgba(17,20,15,.72)';ctx.fillRect(455,672,370,28);ctx.fillStyle='#eadbbd';ctx.textAlign='center';ctx.font='13px system-ui';ctx.fillText('WASD 移动 · E 调查 · 从右下方房门离开',640,692)}const fade=Math.max(0,1-scene.elapsed/2);ctx.fillStyle=`rgba(0,0,0,${fade})`;ctx.fillRect(0,0,1280,720);ctx.restore()}
 
 export const createVillageWakeScene = (skip = false) => ({
   id: SCENE.VILLAGE_OUTSKIRTS,
@@ -105,10 +101,10 @@ export function drawVillageWakeScene(ctx, scene, player, art) {
 }
 
 const ROOM_HOTSPOTS = [
-  { x: 520, y: 220, label: "空粮柜", text: "空的。连一粒麦子都没有。" },
-  { x: 785, y: 410, label: "空碗", text: "碗底的麦糊已经硬了。" },
-  { x: 720, y: 250, label: "壁炉", text: "冷透的灰。昨晚没有生火。" },
-  { x: 525, y: 440, label: "旧床", text: "这张床……还有这双手，都不是我的。" },
+  { x: 450, y: 270, label: "空粮柜", text: "空的。连一粒麦子都没有。" },
+  { x: 875, y: 525, label: "空碗", text: "碗底的麦糊已经硬了。" },
+  { x: 850, y: 285, label: "壁炉", text: "冷透的灰。昨晚没有生火。" },
+  { x: 450, y: 440, label: "旧床", text: "这张床……还有这双手，都不是我的。" },
 ];
 
 const nearestRoomHotspot = (player) => ROOM_HOTSPOTS.map((point) => ({ ...point, distance: Math.hypot(player.x - point.x, player.y - point.y) })).sort((a,b) => a.distance - b.distance)[0];
@@ -131,28 +127,37 @@ function interactionPrompt(ctx, point) {
   ctx.font='12px system-ui';ctx.fillStyle='#fff4d7';ctx.fillText(point.label,0,64);ctx.restore();
 }
 
-function roomOcclusion(ctx, image, x, y, w, h) {
-  const sx = x * image.naturalWidth / 1280, sy = y * image.naturalHeight / 720, sw = w * image.naturalWidth / 1280, sh = h * image.naturalHeight / 720;
-  ctx.drawImage(image,sx,sy,sw,sh,x,y,w,h);
-}
-
 export function roomActorFrame(facing, moving, now=performance.now()) {
   const walkColumns=[1,2,3,2];
   return { row:(2-Math.round(facing/(Math.PI/4))+8)%8, column:moving?walkColumns[Math.floor(now/140)%walkColumns.length]:0 };
 }
 
-export function drawPlayerRoomSceneV2(ctx, scene, player, art) {
-  ctx.save(); ctx.imageSmoothingEnabled = false; ctx.drawImage(art.room,0,0,1280,720);
-  const wake=Math.max(0,Math.min(1,(scene.elapsed-6)/3)), size=118;
-  const {row,column}=roomActorFrame(player.facing,player.moving);
-  ctx.fillStyle="rgba(0,0,0,.24)";ctx.beginPath();ctx.ellipse(player.x,player.y+34,22,7,0,0,7);ctx.fill();
+function drawRoomObject(ctx,object,art){
+  const {x,y,w,h}=object;
+  if(object.id==='cupboard'){ctx.drawImage(art.roomIndoor,136,0,50,67,x,y,w,h);return}
+  if(object.id==='bed'){ctx.save();ctx.translate(x+w/2,y+h/2);ctx.rotate(Math.PI/2);ctx.drawImage(art.roomCouch,-h/2,-w/2,h,w);ctx.restore();return}
+  if(object.id==='fireplace'){ctx.drawImage(art.roomFireplace,0,0,16,16,x,y,w,h);return}
+  if(object.id==='tools'){ctx.drawImage(art.roomBench,x,y,w,h);return}
+  if(object.id==='table'){ctx.drawImage(art.roomTable,x,y,w,h-35);ctx.drawImage(art.roomChair,x+55,y+h-55,65,65);return}
+  if(object.id==='coat'){ctx.drawImage(art.roomIndoor,374,68,16,33,x,y,w,h);}
+}
+function drawRoomActor(ctx,player,art,wake){
+  const size=118,{row,column}=roomActorFrame(player.facing,player.moving);
+  ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();ctx.ellipse(player.x,player.y+34,22,7,0,0,7);ctx.fill();
   ctx.save();ctx.translate(player.x,player.y);ctx.rotate((1-wake)*Math.PI/2);ctx.drawImage(art.hero,column*32,row*32,32,32,-size/2,-size/2,size,size);ctx.restore();
-  // 从底图重新绘制家具前缘，建立角色与床、桌、柜子、壁炉的纵深遮挡。
-  if(player.y<570&&player.x>245&&player.x<525)roomOcclusion(ctx,art.room,270,530,230,40);
-  if(player.y<495&&player.x>785&&player.x<1000)roomOcclusion(ctx,art.room,810,458,165,37);
-  if(player.y<305&&player.x>720&&player.x<970)roomOcclusion(ctx,art.room,750,278,195,27);
-  if(player.y<275&&player.x>245&&player.x<520)roomOcclusion(ctx,art.room,270,250,225,25);
-  let words="";if(scene.phase==='sleep'&&scene.elapsed>3)words="肚子饿饿的……";else if(scene.phase==='wake')words="这是……谁的房间？";else if(scene.bubbleUntil>scene.elapsed)words=scene.bubble;else if(scene.phase==='play'&&scene.elapsed<14)words="先下床看看。";if(words)bubble(ctx,player.x,player.y,words);
+}
+export function drawPlayerRoomSceneV2(ctx,scene,player,art){
+  ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle='#11100d';ctx.fillRect(0,0,1280,720);
+  for(let y=120;y<680;y+=64)for(let x=170;x<1110;x+=64)ctx.drawImage(art.roomFloor,x,y,64,64);
+  ctx.fillStyle='#4a3423';ctx.fillRect(170,70,940,70);ctx.fillRect(170,120,28,560);ctx.fillRect(1082,120,28,560);
+  for(let x=198;x<1082;x+=56)ctx.drawImage(art.roomWall,16,0,16,48,x,70,56,70);
+  ctx.strokeStyle='#241811';ctx.lineWidth=7;ctx.strokeRect(170,70,940,610);
+  ctx.fillStyle='#17120e';ctx.fillRect(800,650,160,70);ctx.strokeStyle='#936b3b';ctx.lineWidth=5;ctx.strokeRect(810,640,140,80);
+  ctx.drawImage(art.roomRug,470,330,250,150);
+  const wake=Math.max(0,Math.min(1,(scene.elapsed-6)/3));
+  const layers=[...ROOM_OBJECTS.map(object=>({sortY:object.sortY,draw:()=>drawRoomObject(ctx,object,art)})),{sortY:player.y,draw:()=>drawRoomActor(ctx,player,art,wake)}].sort((a,b)=>a.sortY-b.sortY);
+  for(const layer of layers)layer.draw();
+  let words='';if(scene.phase==='sleep'&&scene.elapsed>3)words='肚子饿饿的……';else if(scene.phase==='wake')words='这是……谁的房间？';else if(scene.bubbleUntil>scene.elapsed)words=scene.bubble;else if(scene.phase==='play'&&scene.elapsed<14)words='先下床看看。';if(words)bubble(ctx,player.x,player.y,words);
   if(scene.phase==='play'){const near=nearestRoomHotspot(player);if(near.distance<165)interactionPrompt(ctx,near);if(player.x>760&&player.x<975&&player.y>570)interactionPrompt(ctx,{x:868,y:640,label:'离开房间'})}
   if(scene.phase==='play'&&scene.elapsed<16){ctx.fillStyle='rgba(17,20,15,.72)';ctx.fillRect(500,672,280,28);ctx.fillStyle='#eadbbd';ctx.textAlign='center';ctx.font='13px system-ui';ctx.fillText('WASD 移动 · E 调查',640,692)}
   const fade=Math.max(0,1-scene.elapsed/2);ctx.fillStyle=`rgba(0,0,0,${fade})`;ctx.fillRect(0,0,1280,720);ctx.restore();
