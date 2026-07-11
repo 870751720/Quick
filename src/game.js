@@ -1,5 +1,5 @@
-import { RULES, damage } from './combat.js';
-import { sfx, unlockAudio } from './audio.js';
+import { RULES, damage } from './combat.js?v=6';
+import { sfx, unlockAudio } from './audio.js?v=6';
 
 const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d'),keys=new Set();
 const input={x:640,y:360,attack:false,dash:false};
