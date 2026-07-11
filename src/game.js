@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=22";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=22";
+} from "./combat.js?v=23";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=23";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=22";
-import { createGmRegistry } from "./gm.js?v=22";
-import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=22";
+} from "./inventory.js?v=23";
+import { createGmRegistry } from "./gm.js?v=23";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=23";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
