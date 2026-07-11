@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=26";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=26";
+} from "./combat.js?v=27";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=27";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=26";
-import { createGmRegistry } from "./gm.js?v=26";
-import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=26";
+} from "./inventory.js?v=27";
+import { createGmRegistry } from "./gm.js?v=27";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=27";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -355,6 +355,9 @@ const SAVE_KEY = "codename-world.save.v1";
 const menu = document.querySelector("#main-menu"),
   continueButton = document.querySelector("#continue-game"),
   menuHint = document.querySelector("#menu-hint"),
+  newGameConfirm = document.querySelector("#new-game-confirm"),
+  confirmNewGameButton = document.querySelector("#confirm-new-game"),
+  cancelNewGameButton = document.querySelector("#cancel-new-game"),
   settingsPanel = document.querySelector("#settings-panel"),
   volumeInput = document.querySelector("#master-volume"),
   volumeValue = document.querySelector("#volume-value"),
@@ -391,8 +394,14 @@ continueButton.onclick = () => {
   if (restoreGame()) enterGame();
   else menuHint.textContent = "存档无法读取，请开始新游戏";
 };
-document.querySelector("#new-game").onclick = () => {
-  if (hasSave() && !confirm("开始新游戏将覆盖当前进度，是否继续？")) return;
+const closeNewGameConfirm = () => {
+  newGameConfirm.classList.add("hidden");
+  newGameConfirm.setAttribute("aria-hidden", "true");
+  document.querySelector("#new-game").focus();
+};
+const startNewGame = () => {
+  newGameConfirm.classList.add("hidden");
+  newGameConfirm.setAttribute("aria-hidden", "true");
   localStorage.removeItem(SAVE_KEY);
   unlockAudio();
   reset();
@@ -402,13 +411,25 @@ document.querySelector("#new-game").onclick = () => {
   message = "第一幕 · 饥饿";
   enterGame();
 };
+document.querySelector("#new-game").onclick = () => {
+  if (!hasSave()) return startNewGame();
+  newGameConfirm.classList.remove("hidden");
+  newGameConfirm.setAttribute("aria-hidden", "false");
+  confirmNewGameButton.focus();
+};
+confirmNewGameButton.onclick = startNewGame;
+cancelNewGameButton.onclick = closeNewGameConfirm;
+newGameConfirm.addEventListener("pointerdown", (event) => { if (event.target === newGameConfirm) closeNewGameConfirm(); });
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !newGameConfirm.classList.contains("hidden")) closeNewGameConfirm();
+});
 document.querySelector("#open-settings").onclick = () => { settingsPanel.classList.remove("hidden"); settingsPanel.setAttribute("aria-hidden", "false"); };
 document.querySelector("#close-settings").onclick = () => { settingsPanel.classList.add("hidden"); settingsPanel.setAttribute("aria-hidden", "true"); };
 const audioSettings = getAudioSettings();
 volumeInput.value = Math.round(audioSettings.volume * 100); muteInput.checked = audioSettings.muted; volumeValue.value = `${volumeInput.value}%`;
 const updateAudioSettings = () => { volumeValue.value = `${volumeInput.value}%`; setAudioSettings({ volume: Number(volumeInput.value) / 100, muted: muteInput.checked }); };
 volumeInput.oninput = updateAudioSettings; muteInput.onchange = updateAudioSettings;
-document.querySelectorAll(".menu-actions button, .settings-card button").forEach((button) => {
+document.querySelectorAll(".menu-actions button, .settings-card button, .confirm-card button").forEach((button) => {
   button.addEventListener("pointerenter", () => { unlockAudio(); startMenuMusic(); sfx.menuHover(); }, { once: true });
   button.addEventListener("click", () => sfx.menuSelect());
 });

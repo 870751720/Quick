@@ -1,0 +1,5 @@
+.confirm-card{width:min(520px,88%);padding:42px 48px;background:linear-gradient(145deg,#24251f,#11130f);border:1px solid #806a42;box-shadow:0 28px 90px #000,0 0 0 1px #d2ad5a18 inset;animation:confirm-in .18s ease-out both}
+.confirm-card h2{margin-bottom:16px}.confirm-card>p:not(.eyebrow){margin:0;color:#bdb5a7;font:15px/1.8 system-ui,sans-serif}
+.confirm-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:34px}.confirm-actions button{min-width:112px;padding:10px 18px;border:1px solid #75664d;background:#29271f;color:#ddd3c2;font:14px Georgia,"Noto Serif SC",serif;letter-spacing:.08em;cursor:pointer;transition:.15s}
+.confirm-actions button:hover,.confirm-actions button:focus-visible{outline:0;color:#fff0cd;border-color:#c69b55;box-shadow:0 0 18px #bd8b3b38}.confirm-actions .danger{background:#5a241d;border-color:#a55543;color:#ffe4d7}.confirm-actions .danger:hover,.confirm-actions .danger:focus-visible{background:#753026;border-color:#df8068}
+@keyframes confirm-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){.confirm-card{animation:none}}
