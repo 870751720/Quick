@@ -115,17 +115,20 @@ const nearestRoomHotspot = (player) => ROOM_HOTSPOTS.map((point) => ({ ...point,
 
 export function interactPlayerRoomV2(scene, player) {
   const hit = nearestRoomHotspot(player);
-  scene.bubble = hit?.distance < 150 ? hit.text : "没什么值得带走的。";
+  if (!hit || hit.distance >= 150) return false;
+  scene.bubble = hit.text;
   scene.bubbleUntil = scene.elapsed + 3.5;
+  return true;
 }
 
 function interactionPrompt(ctx, point) {
-  const pulse = 1 + Math.sin(performance.now() / 180) * .08;
-  ctx.save(); ctx.translate(point.x, point.y - 58); ctx.scale(pulse,pulse);
-  ctx.fillStyle = "rgba(32,26,19,.92)"; ctx.strokeStyle = "#efd18d"; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(0,0,20,0,7); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = "#fff0c8"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = "bold 17px system-ui"; ctx.fillText("E",0,1);
-  ctx.font = "12px system-ui"; ctx.fillStyle = "#fff4d7"; ctx.fillText(point.label,0,32); ctx.restore();
+  const now=performance.now(),float=Math.sin(now/260)*4,glow=.55+Math.sin(now/190)*.18;
+  ctx.save();ctx.translate(point.x,point.y-55+float);ctx.shadowColor='#f0c978';ctx.shadowBlur=12*glow;
+  ctx.fillStyle=`rgba(237,195,105,${glow})`;ctx.rotate(Math.PI/4);ctx.fillRect(-5,-5,10,10);ctx.rotate(-Math.PI/4);ctx.shadowBlur=0;
+  ctx.strokeStyle='rgba(235,205,139,.45)';ctx.beginPath();ctx.moveTo(0,8);ctx.lineTo(0,19);ctx.stroke();
+  ctx.fillStyle='rgba(25,22,17,.94)';ctx.strokeStyle='#c9a665';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(-18,22,36,28,6);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#fff1cb';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 15px system-ui';ctx.fillText('E',0,36);
+  ctx.font='12px system-ui';ctx.fillStyle='#fff4d7';ctx.fillText(point.label,0,64);ctx.restore();
 }
 
 function roomOcclusion(ctx, image, x, y, w, h) {

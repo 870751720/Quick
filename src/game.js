@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=30";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=30";
+} from "./combat.js?v=31";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=31";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,10 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=30";
-import { createGmRegistry } from "./gm.js?v=30";
-import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=30";
+} from "./inventory.js?v=31";
+import { createGmRegistry } from "./gm.js?v=31";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=31";
+import { HUNGER_RULES, updateHunger, drawHungerHud } from "./hunger.js?v=31";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -66,6 +67,7 @@ const player = {
   potions: 0,
   level: 1,
   xp: 0,
+  hunger: HUNGER_RULES.start,
 };
 let inventory = createInventory(20);
 const attackAtLevel = (level) =>
@@ -365,7 +367,7 @@ const menu = document.querySelector("#main-menu"),
 const hasSave = () => !!localStorage.getItem(SAVE_KEY);
 const persistGame = () => {
   if (!running) return;
-  localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 1, sceneId: currentSceneId, villageScene, roomScene, player: { x: player.x, y: player.y, hp: player.hp, maxHp: player.maxHp, gold: player.gold, level: player.level, xp: player.xp }, inventory }));
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 1, sceneId: currentSceneId, villageScene, roomScene, player: { x: player.x, y: player.y, hp: player.hp, maxHp: player.maxHp, gold: player.gold, level: player.level, xp: player.xp, hunger: player.hunger }, inventory }));
 };
 const restoreGame = () => {
   try {
@@ -572,6 +574,7 @@ function reset() {
     gold: 0,
     level: 1,
     xp: 0,
+    hunger: HUNGER_RULES.start,
     hit: new Set(),
     hurtFlash: 0,
   });
@@ -1350,13 +1353,15 @@ function drawDraggedItem() {
 }
 const drawWorld = draw;
 draw = () => {
-  if (currentSceneId === SCENE.PLAYER_ROOM) { drawPlayerRoomSceneV2(ctx,roomScene,player,art); if(gm.context.collisionDebug)drawRoomCollisionDebug(ctx,player); drawGm(); return; }
+  if (currentSceneId === SCENE.PLAYER_ROOM) { drawPlayerRoomSceneV2(ctx,roomScene,player,art); drawHungerHud(ctx,player.hunger); if(gm.context.collisionDebug)drawRoomCollisionDebug(ctx,player); drawGm(); return; }
   if (currentSceneId === SCENE.VILLAGE_OUTSKIRTS) {
     drawVillageWakeScene(ctx, villageScene, player, art, performance.now());
+    drawHungerHud(ctx,player.hunger);
     drawGm();
     return;
   }
   drawWorld();
+  drawHungerHud(ctx,player.hunger);
   drawInventoryHud();
   drawMerchant();
   drawSpawnZone();
@@ -1370,6 +1375,7 @@ draw = () => {
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.033);
   last = now;
+  if (!gmOpen) updateHunger(player,dt);
   if (currentSceneId === SCENE.PLAYER_ROOM) {
     if (!gmOpen && updatePlayerRoomScene(roomScene,dt,player,keys)) { currentSceneId=SCENE.VILLAGE_OUTSKIRTS;villageScene=createVillageWakeScene(true);player.x=585;player.y=545; }
   } else if (currentSceneId === SCENE.VILLAGE_OUTSKIRTS) {

@@ -18,3 +18,4 @@
 | 叙事前提与第一章体验 | 世界观基调、主角身份及种田到冒险的跨系统体验结构 | 开场村庄、种田阶段、地主压迫与战士觉醒 | 草案 | [`design/narrative-premise.md`](design/narrative-premise.md) |
 | 开始界面与本地存档 | 主菜单、继续/开始流程、设置入口与浏览器本地存档规则 | Web 原型启动与持久化 | 生效中 | [`design/start-menu-system.md`](design/start-menu-system.md) |
 | 第一幕：饥饿 | 新游戏过场、首次食物目标、进入种田循环与偷盗铺垫 | 第一幕叙事及玩家引导 | 草案 | [`design/act-one-hunger.md`](design/act-one-hunger.md) |
+| 饥饿系统 | 饥饿值、时间变化、HUD 警告动效与存档规则 | 玩家生存驱动 | 生效中 | [`design/hunger-system.md`](design/hunger-system.md) |
