@@ -3,11 +3,11 @@ export const SCENE = Object.freeze({ VILLAGE_OUTSKIRTS: 100, PLAYER_ROOM: 101, C
 export const createPlayerRoomScene = (skip = false) => ({ id: SCENE.PLAYER_ROOM, elapsed: skip ? 10 : 0, phase: skip ? "play" : "fade", bubble: "" });
 
 export const ROOM_COLLIDERS = Object.freeze([
-  { x: 0, y: 0, w: 1280, h: 88 }, { x: 0, y: 0, w: 72, h: 720 }, { x: 1205, y: 0, w: 75, h: 720 },
-  { x: 0, y: 650, w: 820, h: 70 }, { x: 1000, y: 650, w: 280, h: 70 },
-  { x: 90, y: 88, w: 275, h: 230 }, { x: 185, y: 305, w: 190, h: 300 },
-  { x: 755, y: 85, w: 265, h: 255 }, { x: 1015, y: 95, w: 175, h: 255 },
-  { x: 790, y: 335, w: 245, h: 195 }, { x: 1060, y: 470, w: 135, h: 180 },
+  { x: 0, y: 0, w: 1280, h: 58 }, { x: 0, y: 0, w: 205, h: 720 }, { x: 1075, y: 0, w: 205, h: 720 },
+  { x: 0, y: 675, w: 790, h: 45 }, { x: 945, y: 675, w: 335, h: 45 },
+  { x: 270, y: 65, w: 225, h: 210 }, { x: 270, y: 300, w: 230, h: 270 },
+  { x: 750, y: 60, w: 195, h: 245 }, { x: 940, y: 75, w: 135, h: 235 },
+  { x: 810, y: 320, w: 165, h: 175 }, { x: 985, y: 475, w: 90, h: 165 },
 ]);
 
 export function roomPositionBlocked(x, y, radius = 25) {
@@ -15,18 +15,18 @@ export function roomPositionBlocked(x, y, radius = 25) {
 }
 
 export function drawRoomCollisionDebug(ctx, player) {
-  ctx.save();ctx.lineWidth=3;ctx.strokeStyle='#ff4059';ctx.fillStyle='rgba(255,40,72,.18)';for(const box of ROOM_COLLIDERS){ctx.fillRect(box.x,box.y,box.w,box.h);ctx.strokeRect(box.x,box.y,box.w,box.h)}ctx.strokeStyle='#42e8ff';ctx.fillStyle='rgba(66,232,255,.18)';ctx.beginPath();ctx.arc(player.x,player.y,25,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.setLineDash([10,7]);ctx.strokeStyle='#65ff72';ctx.strokeRect(820,625,180,95);ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 15px monospace';ctx.textAlign='left';ctx.fillText('RED: collision  CYAN: player  GREEN: exit',28,28);ctx.restore();
+  ctx.save();ctx.lineWidth=3;ctx.strokeStyle='#ff4059';ctx.fillStyle='rgba(255,40,72,.18)';for(const box of ROOM_COLLIDERS){ctx.fillRect(box.x,box.y,box.w,box.h);ctx.strokeRect(box.x,box.y,box.w,box.h)}ctx.strokeStyle='#42e8ff';ctx.fillStyle='rgba(66,232,255,.18)';ctx.beginPath();ctx.arc(player.x,player.y,25,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.setLineDash([10,7]);ctx.strokeStyle='#65ff72';ctx.strokeRect(790,640,155,80);ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 15px monospace';ctx.textAlign='left';ctx.fillText('RED: collision  CYAN: player  GREEN: exit',215,28);ctx.restore();
 }
 
 export function updatePlayerRoomScene(scene, dt, player, keys) {
   scene.elapsed += dt;
   scene.phase = scene.elapsed < 2 ? "fade" : scene.elapsed < 6 ? "sleep" : scene.elapsed < 9 ? "wake" : "play";
   if (scene.phase !== "play") return false;
-  if (!scene.leftBed) { player.x = 430; player.y = 500; scene.leftBed = true; }
+  if (!scene.leftBed) { player.x = 550; player.y = 500; scene.leftBed = true; }
   let x=(keys.has("KeyD")?1:0)-(keys.has("KeyA")?1:0),y=(keys.has("KeyS")?1:0)-(keys.has("KeyW")?1:0),l=Math.hypot(x,y)||1;
   const nextX=player.x+x/l*145*dt,nextY=player.y+y/l*145*dt;
   player.moving=!!(x||y);if(!roomPositionBlocked(nextX,player.y))player.x=nextX;if(!roomPositionBlocked(player.x,nextY))player.y=nextY;if(x||y)player.facing=Math.atan2(y,x);
-  return player.x>850&&player.y>625;
+  return player.x>790&&player.x<945&&player.y>640;
 }
 
 export function interactPlayerRoom(scene, player) {
@@ -102,10 +102,10 @@ export function drawVillageWakeScene(ctx, scene, player, art) {
 }
 
 const ROOM_HOTSPOTS = [
-  { x: 380, y: 255, label: "空粮柜", text: "空的。连一粒麦子都没有。" },
-  { x: 760, y: 430, label: "空碗", text: "碗底的麦糊已经硬了。" },
-  { x: 735, y: 270, label: "壁炉", text: "冷透的灰。昨晚没有生火。" },
-  { x: 400, y: 440, label: "旧床", text: "这张床……还有这双手，都不是我的。" },
+  { x: 520, y: 220, label: "空粮柜", text: "空的。连一粒麦子都没有。" },
+  { x: 785, y: 410, label: "空碗", text: "碗底的麦糊已经硬了。" },
+  { x: 720, y: 250, label: "壁炉", text: "冷透的灰。昨晚没有生火。" },
+  { x: 525, y: 440, label: "旧床", text: "这张床……还有这双手，都不是我的。" },
 ];
 
 const nearestRoomHotspot = (player) => ROOM_HOTSPOTS.map((point) => ({ ...point, distance: Math.hypot(player.x - point.x, player.y - point.y) })).sort((a,b) => a.distance - b.distance)[0];
@@ -136,12 +136,12 @@ export function drawPlayerRoomSceneV2(ctx, scene, player, art) {
   ctx.fillStyle="rgba(0,0,0,.24)";ctx.beginPath();ctx.ellipse(player.x,player.y+34,22,7,0,0,7);ctx.fill();
   ctx.save();ctx.translate(player.x,player.y);ctx.rotate((1-wake)*Math.PI/2);ctx.drawImage(art.hero,0,0,32,32,-size/2,-size/2,size,size);ctx.restore();
   // 从底图重新绘制家具前缘，建立角色与床、桌、柜子、壁炉的纵深遮挡。
-  if(player.y<600&&player.x>150&&player.x<410)roomOcclusion(ctx,art.room,185,548,190,52);
-  if(player.y<530&&player.x>740&&player.x<1070)roomOcclusion(ctx,art.room,790,482,245,48);
-  if(player.y<340&&player.x>720&&player.x<1050)roomOcclusion(ctx,art.room,755,305,265,35);
-  if(player.y<318&&player.x>60&&player.x<390)roomOcclusion(ctx,art.room,90,286,275,32);
+  if(player.y<570&&player.x>245&&player.x<525)roomOcclusion(ctx,art.room,270,530,230,40);
+  if(player.y<495&&player.x>785&&player.x<1000)roomOcclusion(ctx,art.room,810,458,165,37);
+  if(player.y<305&&player.x>720&&player.x<970)roomOcclusion(ctx,art.room,750,278,195,27);
+  if(player.y<275&&player.x>245&&player.x<520)roomOcclusion(ctx,art.room,270,250,225,25);
   let words="";if(scene.phase==='sleep'&&scene.elapsed>3)words="肚子饿饿的……";else if(scene.phase==='wake')words="这是……谁的房间？";else if(scene.bubbleUntil>scene.elapsed)words=scene.bubble;else if(scene.phase==='play'&&scene.elapsed<14)words="先下床看看。";if(words)bubble(ctx,player.x,player.y,words);
-  if(scene.phase==='play'){const near=nearestRoomHotspot(player);if(near.distance<165)interactionPrompt(ctx,near);if(player.x>790&&player.y>565)interactionPrompt(ctx,{x:900,y:650,label:'离开房间'})}
+  if(scene.phase==='play'){const near=nearestRoomHotspot(player);if(near.distance<165)interactionPrompt(ctx,near);if(player.x>760&&player.x<975&&player.y>570)interactionPrompt(ctx,{x:868,y:640,label:'离开房间'})}
   if(scene.phase==='play'&&scene.elapsed<16){ctx.fillStyle='rgba(17,20,15,.72)';ctx.fillRect(500,672,280,28);ctx.fillStyle='#eadbbd';ctx.textAlign='center';ctx.font='13px system-ui';ctx.fillText('WASD 移动 · E 调查',640,692)}
   const fade=Math.max(0,1-scene.elapsed/2);ctx.fillStyle=`rgba(0,0,0,${fade})`;ctx.fillRect(0,0,1280,720);ctx.restore();
 }
