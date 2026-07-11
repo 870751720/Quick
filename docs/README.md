@@ -17,3 +17,4 @@
 | 玩家体验设计指南 | 约束玩法设计从玩家视角评估乐趣、心流、数值与成长 | 所有面向玩家的玩法、系统、内容和交互设计 | 生效中 | [`design/player-experience.md`](design/player-experience.md) |
 | 叙事前提与第一章体验 | 世界观基调、主角身份及种田到冒险的跨系统体验结构 | 开场村庄、种田阶段、地主压迫与战士觉醒 | 草案 | [`design/narrative-premise.md`](design/narrative-premise.md) |
 | 开始界面与本地存档 | 主菜单、继续/开始流程、设置入口与浏览器本地存档规则 | Web 原型启动与持久化 | 生效中 | [`design/start-menu-system.md`](design/start-menu-system.md) |
+| 第一幕：饥饿 | 新游戏过场、首次食物目标、进入种田循环与偷盗铺垫 | 第一幕叙事及玩家引导 | 草案 | [`design/act-one-hunger.md`](design/act-one-hunger.md) |
