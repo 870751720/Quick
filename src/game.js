@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=18";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=18";
+} from "./combat.js?v=19";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=19";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=18";
-import { createGmRegistry } from "./gm.js?v=18";
-import { createPrologue } from "./prologue.js?v=18";
+} from "./inventory.js?v=19";
+import { createGmRegistry } from "./gm.js?v=19";
+import { SCENE, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=19";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -102,6 +102,8 @@ let enemies = [],
   inventoryOpen = false,
   merchantOpen = false,
   last = 0;
+let currentSceneId = SCENE.COMBAT_PROTOTYPE,
+  villageScene = createVillageWakeScene(true);
 const gmEnabled = new URLSearchParams(location.search).get("gm") === "1";
 let gmOpen = false;
 let inventoryFilter = "all",
@@ -113,6 +115,11 @@ const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y),
   };
 
 addEventListener("keydown", (event) => {
+  if (currentSceneId === SCENE.VILLAGE_WAKE && villageScene.phase !== "play" && (event.code === "Space" || event.code === "Escape")) {
+    event.preventDefault();
+    villageScene.elapsed = 10;
+    return;
+  }
   if (event.code === "F1" && gmEnabled) {
     event.preventDefault();
     gmOpen = !gmOpen;
@@ -350,7 +357,7 @@ const menu = document.querySelector("#main-menu"),
 const hasSave = () => !!localStorage.getItem(SAVE_KEY);
 const persistGame = () => {
   if (!running) return;
-  localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 1, player: { x: player.x, y: player.y, hp: player.hp, maxHp: player.maxHp, gold: player.gold, level: player.level, xp: player.xp }, inventory }));
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 1, sceneId: currentSceneId, villageScene, player: { x: player.x, y: player.y, hp: player.hp, maxHp: player.maxHp, gold: player.gold, level: player.level, xp: player.xp }, inventory }));
 };
 const restoreGame = () => {
   try {
@@ -359,6 +366,8 @@ const restoreGame = () => {
     reset();
     Object.assign(player, save.player);
     inventory = save.inventory;
+    currentSceneId = save.sceneId || SCENE.COMBAT_PROTOTYPE;
+    if (save.villageScene) villageScene = save.villageScene;
     return true;
   } catch { return false; }
 };
@@ -371,10 +380,6 @@ const enterGame = () => {
   last = performance.now();
   requestAnimationFrame(loop);
 };
-const prologue = createPrologue(document.querySelector("#prologue"), {
-  onScene: (_, index) => { if (index === 0) sfx.hurt(); else if (index === 1) sfx.heal(); else sfx.menuHover(); },
-  onFinish: () => { reset(); message = "第一幕 · 饥饿　想办法填饱肚子"; enterGame(); },
-});
 continueButton.hidden = !hasSave();
 continueButton.onclick = () => {
   if (restoreGame()) enterGame();
@@ -384,9 +389,12 @@ document.querySelector("#new-game").onclick = () => {
   if (hasSave() && !confirm("开始新游戏将覆盖当前进度，是否继续？")) return;
   localStorage.removeItem(SAVE_KEY);
   unlockAudio();
-  stopMenuMusic();
-  menu.classList.add("hidden");
-  prologue.start();
+  reset();
+  currentSceneId = SCENE.VILLAGE_WAKE;
+  villageScene = createVillageWakeScene(false);
+  player.x = 585; player.y = 545;
+  message = "第一幕 · 饥饿";
+  enterGame();
 };
 document.querySelector("#open-settings").onclick = () => { settingsPanel.classList.remove("hidden"); settingsPanel.setAttribute("aria-hidden", "false"); };
 document.querySelector("#close-settings").onclick = () => { settingsPanel.classList.add("hidden"); settingsPanel.setAttribute("aria-hidden", "true"); };
@@ -1313,6 +1321,11 @@ function drawDraggedItem() {
 }
 const drawWorld = draw;
 draw = () => {
+  if (currentSceneId === SCENE.VILLAGE_WAKE) {
+    drawVillageWakeScene(ctx, villageScene, player, art, performance.now());
+    drawGm();
+    return;
+  }
   drawWorld();
   drawInventoryHud();
   drawMerchant();
@@ -1327,7 +1340,9 @@ draw = () => {
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.033);
   last = now;
-  if (!merchantOpen && !gmOpen && !inventoryOpen) {
+  if (currentSceneId === SCENE.VILLAGE_WAKE) {
+    if (!gmOpen) updateVillageWakeScene(villageScene, dt, player, keys);
+  } else if (!merchantOpen && !gmOpen && !inventoryOpen) {
     if (player.hp > 0) {
       if (gm.context.aiPaused) {
         updatePlayer(dt);
