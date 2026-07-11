@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=24";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=24";
+} from "./combat.js?v=25";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=25";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=24";
-import { createGmRegistry } from "./gm.js?v=24";
-import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=24";
+} from "./inventory.js?v=25";
+import { createGmRegistry } from "./gm.js?v=25";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=25";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -125,7 +125,7 @@ addEventListener("keydown", (event) => {
     villageScene.elapsed = 10;
     return;
   }
-  if (event.code === "F1" && gmEnabled) {
+  if (event.code === "F2" && gmEnabled) {
     event.preventDefault();
     gmOpen = !gmOpen;
     inventoryOpen = merchantOpen = false;
@@ -1083,7 +1083,7 @@ function drawGm() {
   ctx.fillStyle = "#c43b36";
   ctx.fillRect(1160, 14, 100, 30);
   ctx.fillStyle = "#fff";
-  ctx.fillText("GM MODE · F1", 1210, 35);
+  ctx.fillText("GM MODE · F2", 1210, 35);
   if (gmOpen) {
     ctx.fillStyle = "#050706ee";
     ctx.fillRect(0, 0, 1280, 720);
@@ -1097,7 +1097,7 @@ function drawGm() {
     ctx.fillText("GM 控制台", 640, 135);
     ctx.font = "14px system-ui";
     ctx.fillStyle = "#a99878";
-    ctx.fillText("F1 关闭 · 游戏已暂停 · 所有操作记录在本次会话日志", 640, 160);
+    ctx.fillText("F2 关闭 · 游戏已暂停 · 所有操作记录在本次会话日志", 640, 160);
     gmButtons.forEach(([label], i) => {
       const col = i % 5,
         row = Math.floor(i / 5),
