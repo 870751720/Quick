@@ -3,11 +3,14 @@ export const SCENE = Object.freeze({ VILLAGE_OUTSKIRTS: 100, PLAYER_ROOM: 101, C
 export const createPlayerRoomScene = (skip = false) => ({ id: SCENE.PLAYER_ROOM, elapsed: skip ? 10 : 0, phase: skip ? "play" : "fade", bubble: "" });
 
 export const ROOM_COLLIDERS = Object.freeze([
-  { x: 0, y: 0, w: 1280, h: 58 }, { x: 0, y: 0, w: 205, h: 720 }, { x: 1075, y: 0, w: 205, h: 720 },
+  // 房间外墙与窗下墙面：碰撞坐标以角色脚点为基准，而不是图片的透明边界。
+  { x: 0, y: 0, w: 1280, h: 45 }, { x: 0, y: 0, w: 235, h: 720 }, { x: 1105, y: 0, w: 175, h: 720 },
+  { x: 495, y: 45, w: 285, h: 195 },
   { x: 0, y: 675, w: 790, h: 45 }, { x: 945, y: 675, w: 335, h: 45 },
-  { x: 270, y: 65, w: 225, h: 210 }, { x: 270, y: 300, w: 230, h: 270 },
-  { x: 750, y: 60, w: 195, h: 245 }, { x: 940, y: 75, w: 135, h: 235 },
-  { x: 810, y: 320, w: 165, h: 175 }, { x: 985, y: 475, w: 90, h: 165 },
+  // 家具只取落地/不可穿越部分，投影出来的高处由前景遮挡负责。
+  { x: 298, y: 82, w: 227, h: 188 }, { x: 390, y: 340, w: 125, h: 235 },
+  { x: 780, y: 78, w: 194, h: 222 }, { x: 970, y: 92, w: 135, h: 235 },
+  { x: 850, y: 435, w: 145, h: 80 }, { x: 1045, y: 535, w: 60, h: 125 },
 ]);
 
 export function roomPositionBlocked(x, y, radius = 25) {

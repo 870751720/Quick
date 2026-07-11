@@ -4,7 +4,18 @@ import { SCENE, createVillageWakeScene, updateVillageWakeScene, roomPositionBloc
 
 test("场景编号稳定且互不重复", () => assert.equal(new Set(Object.values(SCENE)).size, Object.values(SCENE).length));
 test("村庄苏醒演出结束后才允许移动", () => { const scene=createVillageWakeScene(),player={x:100,y:100},keys=new Set(["KeyD"]);updateVillageWakeScene(scene,1,player,keys);assert.equal(player.x,100);updateVillageWakeScene(scene,10,player,keys);assert.ok(player.x>100);assert.equal(scene.phase,"play"); });
-test("房间碰撞按原画边界阻止家具并保留门口", () => { assert.equal(roomPositionBlocked(850,200),true);assert.equal(roomPositionBlocked(860,680),false);assert.equal(roomPositionBlocked(600,500),false);assert.equal(roomPositionBlocked(100,400),true); });
+test("房间碰撞按脚点阻止实体并保留通道", () => {
+  assert.equal(roomPositionBlocked(850,200),true);
+  assert.equal(roomPositionBlocked(860,680),false);
+  assert.equal(roomPositionBlocked(600,500),false);
+  assert.equal(roomPositionBlocked(100,400),true);
+  assert.equal(roomPositionBlocked(335,430),false,"床左侧地毯可以行走");
+  assert.equal(roomPositionBlocked(555,190),true,"角色不能走到窗户墙面");
+  assert.equal(roomPositionBlocked(550,305),false,"床与柜子之间保留通道");
+  assert.equal(roomPositionBlocked(805,365),false,"壁炉与桌子之间保留通道");
+  assert.equal(roomPositionBlocked(900,470),true,"桌脚区域不可穿越");
+  assert.equal(roomPositionBlocked(900,380),false,"桌后区域通过前景遮挡表现");
+});
 test("房间角色按八方向选择行走与待机帧", () => {
   assert.deepEqual(roomActorFrame(-Math.PI/2,false,0),{row:4,column:0});
   assert.deepEqual(roomActorFrame(0,true,0),{row:2,column:1});
