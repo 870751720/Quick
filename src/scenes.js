@@ -131,7 +131,8 @@ function roomOcclusion(ctx, image, x, y, w, h) {
 }
 
 export function roomActorFrame(facing, moving, now=performance.now()) {
-  return { row:(Math.round(facing/(Math.PI/4))+10)%8, column:moving?1+(Math.floor(now/140)%4):0 };
+  const walkColumns=[1,2,3,2];
+  return { row:(2-Math.round(facing/(Math.PI/4))+8)%8, column:moving?walkColumns[Math.floor(now/140)%walkColumns.length]:0 };
 }
 
 export function drawPlayerRoomSceneV2(ctx, scene, player, art) {
