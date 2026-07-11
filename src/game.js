@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=23";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=23";
+} from "./combat.js?v=24";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=24";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=23";
-import { createGmRegistry } from "./gm.js?v=23";
-import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=23";
+} from "./inventory.js?v=24";
+import { createGmRegistry } from "./gm.js?v=24";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=24";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -107,7 +107,7 @@ let enemies = [],
 let currentSceneId = SCENE.COMBAT_PROTOTYPE,
   villageScene = createVillageWakeScene(true),
   roomScene = createPlayerRoomScene(true);
-const gmEnabled = new URLSearchParams(location.search).get("gm") === "1";
+const gmEnabled = new URLSearchParams(location.search).get("gm") !== "0";
 let gmOpen = false;
 let inventoryFilter = "all",
   dragSlot = -1;
@@ -448,6 +448,7 @@ const gm = createGmRegistry({
   player,
   god: false,
   aiPaused: false,
+  collisionDebug: false,
   setLevel(level) {
     player.level = level;
     player.maxHp = 100 + (level - 1) * 10 + equipmentHp(inventory);
@@ -508,6 +509,7 @@ const gm = createGmRegistry({
   },
 });
 const gmButtons = [
+  ["碰撞体", "collision"],
   ["无敌", "god"],
   ["满血", "heal"],
   ["+1000 金", "gold 1000"],
@@ -1327,7 +1329,7 @@ function drawDraggedItem() {
 }
 const drawWorld = draw;
 draw = () => {
-  if (currentSceneId === SCENE.PLAYER_ROOM) { drawPlayerRoomSceneV2(ctx,roomScene,player,art); drawGm(); return; }
+  if (currentSceneId === SCENE.PLAYER_ROOM) { drawPlayerRoomSceneV2(ctx,roomScene,player,art); if(gm.context.collisionDebug)drawRoomCollisionDebug(ctx,player); drawGm(); return; }
   if (currentSceneId === SCENE.VILLAGE_OUTSKIRTS) {
     drawVillageWakeScene(ctx, villageScene, player, art, performance.now());
     drawGm();

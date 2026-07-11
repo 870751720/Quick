@@ -14,6 +14,10 @@ export function roomPositionBlocked(x, y, radius = 25) {
   return ROOM_COLLIDERS.some((box) => x + radius > box.x && x - radius < box.x + box.w && y + radius > box.y && y - radius < box.y + box.h);
 }
 
+export function drawRoomCollisionDebug(ctx, player) {
+  ctx.save();ctx.lineWidth=3;ctx.strokeStyle='#ff4059';ctx.fillStyle='rgba(255,40,72,.18)';for(const box of ROOM_COLLIDERS){ctx.fillRect(box.x,box.y,box.w,box.h);ctx.strokeRect(box.x,box.y,box.w,box.h)}ctx.strokeStyle='#42e8ff';ctx.fillStyle='rgba(66,232,255,.18)';ctx.beginPath();ctx.arc(player.x,player.y,25,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.setLineDash([10,7]);ctx.strokeStyle='#65ff72';ctx.strokeRect(820,625,180,95);ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 15px monospace';ctx.textAlign='left';ctx.fillText('RED: collision  CYAN: player  GREEN: exit',28,28);ctx.restore();
+}
+
 export function updatePlayerRoomScene(scene, dt, player, keys) {
   scene.elapsed += dt;
   scene.phase = scene.elapsed < 2 ? "fade" : scene.elapsed < 6 ? "sleep" : scene.elapsed < 9 ? "wake" : "play";

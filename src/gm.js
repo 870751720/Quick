@@ -14,5 +14,6 @@ export function createGmRegistry(context,now=()=>new Date().toISOString()){
   register('ai','切换怪物 AI',()=>{context.aiPaused=!context.aiPaused;return`怪物 AI：${context.aiPaused?'暂停':'运行'}`});
   register('tp','传送',([target='zone'])=>context.teleport(target));
   register('preset','加载测试预设',([name='growth'])=>context.preset(name));
+  register('collision','显示/隐藏碰撞体',([value='toggle'])=>{context.collisionDebug=value==='on'?true:value==='off'?false:!context.collisionDebug;return`碰撞体：${context.collisionDebug?'显示':'隐藏'}`});
   return api;
 }
