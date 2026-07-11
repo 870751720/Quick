@@ -65,6 +65,8 @@
 
 ## Kenney Roguelike Indoor Pack
 
+> 状态：已废弃并从仓库移除。因像素密度、透视和色板与当前角色不匹配，不再参与运行时绘制。
+
 - 文件：`assets/environment/interior/kenney-indoor.png`、`KENNEY-LICENSE.txt`
 - 用途：场景 `101` 的粮柜、旧外套及可扩展室内家具 Sprite
 - 作者：Kenney
@@ -77,6 +79,8 @@
 
 ## Christmas Village Asset Pack
 
+> 状态：已废弃并从仓库移除。因与 Kenney 家具混用造成风格割裂，不再参与运行时绘制。
+
 - 文件：`assets/environment/interior/floor-tile.png`、`floor-tileset.png`、`wall-tileset.png`、`fireplace.png`、`table.png`、`chair.png`、`rug.png`、`bench.png`、`couch.png`
 - 用途：场景 `101` 的木地板、墙体、壁炉、桌椅、地毯及床体组合
 - 作者：HaywardMorihara（murphysdad）
@@ -86,3 +90,15 @@
 - 下载时间：2026-07-12
 - 使用范围：允许商业与非商业使用、修改和再分发；无需署名
 - 工程检查：ZIP 仅包含小尺寸 PNG；未纳入预览字体或其他第三方内容，运行时图片合计低于 10 KB
+
+## Epic RPG World — Free House Interiors
+
+- 文件：`assets/environment/epic-interior/tileset.png`、`bed.png`、`cabinet.png`、`fireplace.png`、`table.png`、`chair.png`、`chest.png`、`barrel.png`
+- 用途：场景 `101` 的统一墙地面与全部家具 Sprite
+- 作者：RafaelMatos
+- 来源：https://rafaelmatos.itch.io/epic-rpg-world-free-house-interiors
+- 原始下载：`Epic RPG World - Village(interiors) V1.3.zip`（itch.io 签名临时下载地址不留存）
+- 许可证：作者自定义项目使用许可；允许个人与商业项目使用及修改，禁止 NFT、AI 训练以及将原始或修改素材重新打包、转售或作为素材包再分发；署名非强制
+- 下载时间：2026-07-12
+- 使用范围：仅作为本游戏场景运行资源随项目分发，不作为独立素材包提供
+- 工程检查：ZIP 约 2 MB，仅选取 PNG 图集及 7 个独立家具 Sprite；未执行任何脚本、插件或可执行文件；家具透明边界已逐像素检查并记录到场景对象数据

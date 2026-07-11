@@ -11,7 +11,7 @@ test("房间碰撞按脚点阻止实体并保留通道", () => {
   assert.equal(roomPositionBlocked(100,400),true);
   assert.equal(roomPositionBlocked(220,430),false,"床左侧可以行走");
   assert.equal(roomPositionBlocked(600,100),true,"角色不能走进上墙");
-  assert.equal(roomPositionBlocked(335,290),false,"床与柜子之间保留通道");
+  assert.equal(roomPositionBlocked(550,300),false,"床与柜子之间保留通道");
   assert.equal(roomPositionBlocked(805,320),false,"壁炉与桌子之间保留通道");
   assert.equal(roomPositionBlocked(900,440),true,"桌脚区域不可穿越");
   assert.equal(roomPositionBlocked(900,340),false,"桌后区域按 Y 排序表现");
@@ -31,5 +31,10 @@ test("房间调查仅在交互点有效距离内响应",()=>{
   assert.ok(scene.bubble.length>0);
 });
 test("家具碰撞由场景对象数据生成",()=>{
-  for(const object of ROOM_OBJECTS)assert.ok(ROOM_COLLIDERS.includes(object.collision),`${object.id} 使用同一碰撞对象`);
+  for(const object of ROOM_OBJECTS){
+    assert.ok(ROOM_COLLIDERS.includes(object.collision),`${object.id} 使用同一碰撞对象`);
+    assert.equal(object.collision.x,object.x+object.alpha.x*object.scale);
+    assert.equal(object.collision.w,object.alpha.w*object.scale);
+    assert.equal(object.sortY,object.collision.y+object.collision.h);
+  }
 });

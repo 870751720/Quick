@@ -3,13 +3,15 @@ export const SCENE = Object.freeze({ VILLAGE_OUTSKIRTS: 100, PLAYER_ROOM: 101, C
 export const createPlayerRoomScene = (skip = false) => ({ id: SCENE.PLAYER_ROOM, elapsed: skip ? 10 : 0, phase: skip ? "play" : "fade", bubble: "" });
 
 export const ROOM_OBJECTS=Object.freeze([
-  {id:'cupboard',x:250,y:130,w:170,h:120,sortY:250,collision:{x:250,y:174,w:170,h:76}},
-  {id:'bed',x:265,y:300,w:145,h:240,sortY:540,collision:{x:265,y:330,w:145,h:210}},
-  {id:'fireplace',x:770,y:130,w:155,h:120,sortY:250,collision:{x:770,y:155,w:155,h:95}},
-  {id:'tools',x:940,y:145,w:115,h:95,sortY:240,collision:{x:940,y:165,w:115,h:75}},
-  {id:'table',x:790,y:335,w:175,h:150,sortY:485,collision:{x:790,y:390,w:175,h:95}},
-  {id:'coat',x:1015,y:455,w:60,h:155,sortY:610,collision:{x:1015,y:480,w:60,h:130}},
+  {id:'bed',image:'roomBed',x:230,y:285,w:96,h:96,scale:2,alpha:{x:24,y:6,w:48,h:82},footStart:0},
+  {id:'cupboard',image:'roomCabinet',x:390,y:95,w:64,h:96,scale:2,alpha:{x:11,y:16,w:42,h:66},footStart:.7},
+  {id:'fireplace',image:'roomFireplace',x:690,y:60,w:128,h:128,scale:1.8,alpha:{x:20,y:2,w:89,h:108},footStart:.68},
+  {id:'table',image:'roomTable',x:760,y:375,w:128,h:32,scale:1.7,alpha:{x:20,y:0,w:88,h:32},footStart:.5},
+  {id:'chair',image:'roomChair',x:845,y:455,w:32,h:32,scale:1.7,alpha:{x:4,y:0,w:19,h:32},footStart:.5},
+  {id:'chest',image:'roomChest',x:970,y:515,w:64,h:32,scale:1.7,alpha:{x:15,y:9,w:34,h:23},footStart:.35},
+  {id:'barrel',image:'roomBarrel',x:970,y:145,w:32,h:64,scale:1.7,alpha:{x:1,y:26,w:30,h:37},footStart:.35},
 ]);
+for(const object of ROOM_OBJECTS){const a=object.alpha,s=object.scale,fy=a.y+a.h*object.footStart;object.collision=Object.freeze({x:object.x+a.x*s,y:object.y+fy*s,w:a.w*s,h:a.h*(1-object.footStart)*s});object.sortY=object.collision.y+object.collision.h}
 const ROOM_WALL_COLLIDERS=Object.freeze([
   {x:0,y:0,w:1280,h:120},{x:0,y:0,w:170,h:720},{x:1110,y:0,w:170,h:720},
   {x:0,y:680,w:800,h:40},{x:960,y:680,w:320,h:40},
@@ -133,13 +135,7 @@ export function roomActorFrame(facing, moving, now=performance.now()) {
 }
 
 function drawRoomObject(ctx,object,art){
-  const {x,y,w,h}=object;
-  if(object.id==='cupboard'){ctx.drawImage(art.roomIndoor,136,0,50,67,x,y,w,h);return}
-  if(object.id==='bed'){ctx.save();ctx.translate(x+w/2,y+h/2);ctx.rotate(Math.PI/2);ctx.drawImage(art.roomCouch,-h/2,-w/2,h,w);ctx.restore();return}
-  if(object.id==='fireplace'){ctx.drawImage(art.roomFireplace,0,0,16,16,x,y,w,h);return}
-  if(object.id==='tools'){ctx.drawImage(art.roomBench,x,y,w,h);return}
-  if(object.id==='table'){ctx.drawImage(art.roomTable,x,y,w,h-35);ctx.drawImage(art.roomChair,x+55,y+h-55,65,65);return}
-  if(object.id==='coat'){ctx.drawImage(art.roomIndoor,374,68,16,33,x,y,w,h);}
+  ctx.drawImage(art[object.image],object.x,object.y,object.w*object.scale,object.h*object.scale);
 }
 function drawRoomActor(ctx,player,art,wake){
   const size=118,{row,column}=roomActorFrame(player.facing,player.moving);
@@ -148,12 +144,11 @@ function drawRoomActor(ctx,player,art,wake){
 }
 export function drawPlayerRoomSceneV2(ctx,scene,player,art){
   ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle='#11100d';ctx.fillRect(0,0,1280,720);
-  for(let y=120;y<680;y+=64)for(let x=170;x<1110;x+=64)ctx.drawImage(art.roomFloor,x,y,64,64);
-  ctx.fillStyle='#4a3423';ctx.fillRect(170,70,940,70);ctx.fillRect(170,120,28,560);ctx.fillRect(1082,120,28,560);
-  for(let x=198;x<1082;x+=56)ctx.drawImage(art.roomWall,16,0,16,48,x,70,56,70);
+  for(let y=120;y<680;y+=64)for(let x=170;x<1110;x+=64)ctx.drawImage(art.roomTiles,992,32,32,32,x,y,64,64);
+  ctx.fillStyle='#271a19';ctx.fillRect(170,55,940,85);ctx.fillRect(170,120,28,560);ctx.fillRect(1082,120,28,560);
+  for(let x=198;x<1082;x+=64)ctx.drawImage(art.roomTiles,576,64,32,32,x,76,64,64);
   ctx.strokeStyle='#241811';ctx.lineWidth=7;ctx.strokeRect(170,70,940,610);
   ctx.fillStyle='#17120e';ctx.fillRect(800,650,160,70);ctx.strokeStyle='#936b3b';ctx.lineWidth=5;ctx.strokeRect(810,640,140,80);
-  ctx.drawImage(art.roomRug,470,330,250,150);
   const wake=Math.max(0,Math.min(1,(scene.elapsed-6)/3));
   const layers=[...ROOM_OBJECTS.map(object=>({sortY:object.sortY,draw:()=>drawRoomObject(ctx,object,art)})),{sortY:player.y,draw:()=>drawRoomActor(ctx,player,art,wake)}].sort((a,b)=>a.sortY-b.sortY);
   for(const layer of layers)layer.draw();
