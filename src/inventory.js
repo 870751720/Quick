@@ -2,7 +2,7 @@ export const INVENTORY_SIZE=20;
 export const RARITIES=[
   {name:'普通',color:'#d8d2c4',multiplier:1},
   {name:'精良',color:'#63d58a',multiplier:1.45},
-  {name:'稀有',color:'#67a8ff',multiplier:2}
+  {name:'稀有',color:'#b76cff',multiplier:2}
 ];
 const NAMES={weapon:['缺口短剑','兽骨战斧','荒原长剑'],armor:['旧皮甲','兽皮战衣','赤铁胸甲']};
 export function createInventory(size=INVENTORY_SIZE){return{slots:Array(size).fill(null),equipment:{weapon:null,armor:null}}}

@@ -18,3 +18,13 @@
 
 - 2026-07-11：Fry 的 `hero-fry-cc0.png` 因缺少攻击动画且与环境风格不统一而移除。
 - 2026-07-11：生成背景 `ruined-clearing.png` 因与像素角色风格不统一而移除。
+## 16x16 Assorted RPG Icons
+
+- 文件：`assets/items/shade/potions.png`、`weapons.png`、`armours.png`
+- 用途：回血药、武器和护甲的地面掉落与背包图标
+- 作者：Shade
+- 来源：https://opengameart.org/content/16x16-assorted-rpg-icons
+- 许可证：CC0 1.0（https://creativecommons.org/publicdomain/zero/1.0/）
+- 下载时间：2026-07-11
+- 使用范围：允许商业和非商业使用、修改及再分发；无需署名
+- 工程检查：PNG 精灵表，无脚本或可执行内容；16×16 单元，与现有 Shade/Puny 像素资源匹配
