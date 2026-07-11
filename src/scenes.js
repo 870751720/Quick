@@ -130,11 +130,16 @@ function roomOcclusion(ctx, image, x, y, w, h) {
   ctx.drawImage(image,sx,sy,sw,sh,x,y,w,h);
 }
 
+export function roomActorFrame(facing, moving, now=performance.now()) {
+  return { row:(Math.round(facing/(Math.PI/4))+10)%8, column:moving?1+(Math.floor(now/140)%4):0 };
+}
+
 export function drawPlayerRoomSceneV2(ctx, scene, player, art) {
   ctx.save(); ctx.imageSmoothingEnabled = false; ctx.drawImage(art.room,0,0,1280,720);
   const wake=Math.max(0,Math.min(1,(scene.elapsed-6)/3)), size=118;
+  const {row,column}=roomActorFrame(player.facing,player.moving);
   ctx.fillStyle="rgba(0,0,0,.24)";ctx.beginPath();ctx.ellipse(player.x,player.y+34,22,7,0,0,7);ctx.fill();
-  ctx.save();ctx.translate(player.x,player.y);ctx.rotate((1-wake)*Math.PI/2);ctx.drawImage(art.hero,0,0,32,32,-size/2,-size/2,size,size);ctx.restore();
+  ctx.save();ctx.translate(player.x,player.y);ctx.rotate((1-wake)*Math.PI/2);ctx.drawImage(art.hero,column*32,row*32,32,32,-size/2,-size/2,size,size);ctx.restore();
   // 从底图重新绘制家具前缘，建立角色与床、桌、柜子、壁炉的纵深遮挡。
   if(player.y<570&&player.x>245&&player.x<525)roomOcclusion(ctx,art.room,270,530,230,40);
   if(player.y<495&&player.x>785&&player.x<1000)roomOcclusion(ctx,art.room,810,458,165,37);
