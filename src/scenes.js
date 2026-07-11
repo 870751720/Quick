@@ -1,7 +1,25 @@
-export const SCENE = Object.freeze({ VILLAGE_WAKE: 100, COMBAT_PROTOTYPE: 900 });
+export const SCENE = Object.freeze({ VILLAGE_OUTSKIRTS: 100, PLAYER_ROOM: 101, COMBAT_PROTOTYPE: 900 });
+
+export const createPlayerRoomScene = (skip = false) => ({ id: SCENE.PLAYER_ROOM, elapsed: skip ? 10 : 0, phase: skip ? "play" : "fade", bubble: "" });
+
+export function updatePlayerRoomScene(scene, dt, player, keys) {
+  scene.elapsed += dt;
+  scene.phase = scene.elapsed < 2 ? "fade" : scene.elapsed < 6 ? "sleep" : scene.elapsed < 9 ? "wake" : "play";
+  if (scene.phase !== "play") return false;
+  let x=(keys.has("KeyD")?1:0)-(keys.has("KeyA")?1:0),y=(keys.has("KeyS")?1:0)-(keys.has("KeyW")?1:0),l=Math.hypot(x,y)||1;
+  player.moving=!!(x||y);player.x=Math.max(225,Math.min(1065,player.x+x/l*145*dt));player.y=Math.max(120,Math.min(650,player.y+y/l*145*dt));if(x||y)player.facing=Math.atan2(y,x);
+  return player.x>850&&player.y>625;
+}
+
+export function interactPlayerRoom(scene, player) {
+  const points=[{x:300,y:205,text:"空的。连一粒麦子都没有。"},{x:880,y:390,text:"碗底的麦糊已经硬了。"},{x:930,y:160,text:"冷透的灰。昨晚没有生火。"},{x:400,y:430,text:"这张床……还有这双手，都不是我的。"}];
+  const hit=points.find(p=>Math.hypot(player.x-p.x,player.y-p.y)<125);scene.bubble=hit?.text||"没什么值得带走的。";scene.bubbleUntil=scene.elapsed+3.5;
+}
+
+export function drawPlayerRoomScene(ctx,scene,player,art){ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(art.room,0,0,1280,720);const wake=Math.max(0,Math.min(1,(scene.elapsed-6)/3));ctx.fillStyle="rgba(0,0,0,.24)";ctx.beginPath();ctx.ellipse(player.x,player.y+24,15,5,0,0,7);ctx.fill();ctx.save();ctx.translate(player.x,player.y);ctx.rotate((1-wake)*Math.PI/2);ctx.drawImage(art.hero,0,0,32,32,-37,-37,74,74);ctx.restore();let words="";if(scene.phase==='sleep'&&scene.elapsed>3)words="肚子饿饿的……";else if(scene.phase==='wake')words="这是……谁的房间？";else if(scene.bubbleUntil>scene.elapsed)words=scene.bubble;else if(scene.phase==='play'&&scene.elapsed<14)words="先下床看看。";if(words)bubble(ctx,player.x,player.y,words);if(scene.phase==='play'&&scene.elapsed<16){ctx.fillStyle='rgba(17,20,15,.72)';ctx.fillRect(455,672,370,28);ctx.fillStyle='#eadbbd';ctx.textAlign='center';ctx.font='13px system-ui';ctx.fillText('WASD 移动 · E 调查 · 从右下方房门离开',640,692)}const fade=Math.max(0,1-scene.elapsed/2);ctx.fillStyle=`rgba(0,0,0,${fade})`;ctx.fillRect(0,0,1280,720);ctx.restore()}
 
 export const createVillageWakeScene = (skip = false) => ({
-  id: SCENE.VILLAGE_WAKE,
+  id: SCENE.VILLAGE_OUTSKIRTS,
   elapsed: skip ? 13 : 0,
   phase: skip ? "play" : "fade",
   objective: "想办法填饱肚子",

@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=20";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=20";
+} from "./combat.js?v=21";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=21";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=20";
-import { createGmRegistry } from "./gm.js?v=20";
-import { SCENE, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=20";
+} from "./inventory.js?v=21";
+import { createGmRegistry } from "./gm.js?v=21";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoom, drawPlayerRoomScene, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=21";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -47,6 +47,7 @@ const art = {
   grass: load("assets/environment/puny/Grass1.png"),
   tree: load("assets/environment/puny/Tree.png"),
   world: load("assets/environment/puny/punyworld-overworld-tileset.png"),
+  room: load("assets/scenes/room-101.png"),
   potions: load("assets/items/shade/potions.png"),
   weapons: load("assets/items/shade/weapons.png"),
   armours: load("assets/items/shade/armours.png"),
@@ -104,7 +105,8 @@ let enemies = [],
   merchantOpen = false,
   last = 0;
 let currentSceneId = SCENE.COMBAT_PROTOTYPE,
-  villageScene = createVillageWakeScene(true);
+  villageScene = createVillageWakeScene(true),
+  roomScene = createPlayerRoomScene(true);
 const gmEnabled = new URLSearchParams(location.search).get("gm") === "1";
 let gmOpen = false;
 let inventoryFilter = "all",
@@ -116,7 +118,9 @@ const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y),
   };
 
 addEventListener("keydown", (event) => {
-  if (currentSceneId === SCENE.VILLAGE_WAKE && villageScene.phase !== "play" && (event.code === "Space" || event.code === "Escape")) {
+  if (currentSceneId === SCENE.PLAYER_ROOM && roomScene.phase !== "play" && (event.code === "Space" || event.code === "Escape")) { event.preventDefault(); roomScene.elapsed = 9; return; }
+  if (currentSceneId === SCENE.PLAYER_ROOM && event.code === "KeyE") { interactPlayerRoom(roomScene, player); return; }
+  if (currentSceneId === SCENE.VILLAGE_OUTSKIRTS && villageScene.phase !== "play" && (event.code === "Space" || event.code === "Escape")) {
     event.preventDefault();
     villageScene.elapsed = 10;
     return;
@@ -358,7 +362,7 @@ const menu = document.querySelector("#main-menu"),
 const hasSave = () => !!localStorage.getItem(SAVE_KEY);
 const persistGame = () => {
   if (!running) return;
-  localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 1, sceneId: currentSceneId, villageScene, player: { x: player.x, y: player.y, hp: player.hp, maxHp: player.maxHp, gold: player.gold, level: player.level, xp: player.xp }, inventory }));
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 1, sceneId: currentSceneId, villageScene, roomScene, player: { x: player.x, y: player.y, hp: player.hp, maxHp: player.maxHp, gold: player.gold, level: player.level, xp: player.xp }, inventory }));
 };
 const restoreGame = () => {
   try {
@@ -369,6 +373,7 @@ const restoreGame = () => {
     inventory = save.inventory;
     currentSceneId = save.sceneId || SCENE.COMBAT_PROTOTYPE;
     if (save.villageScene) villageScene = save.villageScene;
+    if (save.roomScene) roomScene = save.roomScene;
     return true;
   } catch { return false; }
 };
@@ -391,9 +396,9 @@ document.querySelector("#new-game").onclick = () => {
   localStorage.removeItem(SAVE_KEY);
   unlockAudio();
   reset();
-  currentSceneId = SCENE.VILLAGE_WAKE;
-  villageScene = createVillageWakeScene(false);
-  player.x = 585; player.y = 545;
+  currentSceneId = SCENE.PLAYER_ROOM;
+  roomScene = createPlayerRoomScene(false);
+  player.x = 400; player.y = 430;
   message = "第一幕 · 饥饿";
   enterGame();
 };
@@ -1322,7 +1327,8 @@ function drawDraggedItem() {
 }
 const drawWorld = draw;
 draw = () => {
-  if (currentSceneId === SCENE.VILLAGE_WAKE) {
+  if (currentSceneId === SCENE.PLAYER_ROOM) { drawPlayerRoomScene(ctx,roomScene,player,art); drawGm(); return; }
+  if (currentSceneId === SCENE.VILLAGE_OUTSKIRTS) {
     drawVillageWakeScene(ctx, villageScene, player, art, performance.now());
     drawGm();
     return;
@@ -1341,7 +1347,9 @@ draw = () => {
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.033);
   last = now;
-  if (currentSceneId === SCENE.VILLAGE_WAKE) {
+  if (currentSceneId === SCENE.PLAYER_ROOM) {
+    if (!gmOpen && updatePlayerRoomScene(roomScene,dt,player,keys)) { currentSceneId=SCENE.VILLAGE_OUTSKIRTS;villageScene=createVillageWakeScene(true);player.x=585;player.y=545; }
+  } else if (currentSceneId === SCENE.VILLAGE_OUTSKIRTS) {
     if (!gmOpen) updateVillageWakeScene(villageScene, dt, player, keys);
   } else if (!merchantOpen && !gmOpen && !inventoryOpen) {
     if (player.hp > 0) {
