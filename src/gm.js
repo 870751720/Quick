@@ -7,7 +7,7 @@ export function createGmRegistry(context,now=()=>new Date().toISOString()){
   register('heal','恢复全部生命',()=>{context.player.hp=context.player.maxHp;return'生命已恢复'});
   register('gold','增加金币',([value='1000'])=>{const amount=Math.max(0,Number(value)||0);context.player.gold+=amount;return`获得 ${amount} 金币`});
   register('level','设置等级',([value='10'])=>context.setLevel(Math.max(1,Number(value)||1)));
-  register('potion','增加药水',([value='10'])=>{const amount=Math.max(0,Number(value)||0);context.player.potions+=amount;return`获得 ${amount} 瓶药水`});
+  register('potion','增加药水',([value='10'])=>{const amount=Math.max(0,Number(value)||0);if(context.addPotion)return context.addPotion(amount);context.player.potions+=amount;return`获得 ${amount} 瓶药水`});
   register('gear','生成装备',([type='weapon',rarity='rare'])=>context.giveGear(type,rarity));
   register('spawn','生成怪物',([kind='normal',count='1'])=>context.spawn(kind,Math.min(20,Math.max(1,Number(count)||1))));
   register('clear','清空怪物',()=>context.clearEnemies());

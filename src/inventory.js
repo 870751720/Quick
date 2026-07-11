@@ -1,16 +1,26 @@
 export const INVENTORY_SIZE=20;
-export const RARITIES=[
-  {name:'普通',color:'#d8d2c4',multiplier:1},
-  {name:'精良',color:'#63d58a',multiplier:1.45},
-  {name:'稀有',color:'#b76cff',multiplier:2}
-];
+export const RARITIES=[{name:'普通',color:'#d8d2c4',multiplier:1},{name:'精良',color:'#63d58a',multiplier:1.45},{name:'稀有',color:'#b76cff',multiplier:2}];
+export const POTION={definitionId:'healing-potion',type:'consumable',name:'回血药',rarity:'普通',color:'#63d58a',stackMax:20,heal:25};
 const NAMES={weapon:['缺口短剑','兽骨战斧','荒原长剑'],armor:['旧皮甲','兽皮战衣','赤铁胸甲']};
+let sequence=0;const uid=prefix=>`${prefix}-${Date.now()}-${sequence++}`;
 export function createInventory(size=INVENTORY_SIZE){return{slots:Array(size).fill(null),equipment:{weapon:null,armor:null}}}
-export function createGear(type,wave=1,roll=Math.random){const rarityIndex=roll()>.92?2:roll()>.68?1:0,rarity=RARITIES[rarityIndex],tier=Math.max(1,Math.ceil(wave/2)),value=Math.round((type==='weapon'?3:8)*tier*rarity.multiplier);return{id:`${type}-${Date.now()}-${Math.floor(roll()*1e6)}`,type,name:NAMES[type][Math.min(2,tier-1)],rarity:rarity.name,color:rarity.color,attack:type==='weapon'?value:0,maxHp:type==='armor'?value:0}}
-export function addItem(inventory,item){const index=inventory.slots.indexOf(null);if(index<0)return false;inventory.slots[index]=item;return true}
-export function equipItem(inventory,index){const item=inventory.slots[index];if(!item||!['weapon','armor'].includes(item.type))return null;const previous=inventory.equipment[item.type];inventory.equipment[item.type]=item;inventory.slots[index]=previous;return{item,previous}}
-export function itemSellValue(item){if(!item)return 0;const rarity=item.rarity==='稀有'?3:item.rarity==='精良'?2:1;return Math.max(3,Math.round(((item.attack||0)*3+(item.maxHp||0))*rarity))}
-export function sellItem(inventory,index){const item=inventory.slots[index];if(!item)return{gold:0,item:null};inventory.slots[index]=null;return{gold:itemSellValue(item),item}}
-export function sellAll(inventory){let gold=0,count=0;for(let i=0;i<inventory.slots.length;i++){const sold=sellItem(inventory,i);if(sold.item){gold+=sold.gold;count++}}return{gold,count}}
+export function createGear(type,wave=1,roll=Math.random){const rarityIndex=roll()>.92?2:roll()>.68?1:0,rarity=RARITIES[rarityIndex],tier=Math.max(1,Math.ceil(wave/2)),value=Math.round((type==='weapon'?3:8)*tier*rarity.multiplier);return{id:uid(type),definitionId:`${type}-${tier}`,type,name:NAMES[type][Math.min(2,tier-1)],rarity:rarity.name,color:rarity.color,attack:type==='weapon'?value:0,maxHp:type==='armor'?value:0,locked:false,junk:false,new:true}}
+export function createStack(definition=POTION,quantity=1){return{...definition,id:uid(definition.definitionId),quantity:Math.min(quantity,definition.stackMax),locked:false,new:true}}
+export const isStackable=item=>!!item?.stackMax;
+export const canStack=(a,b)=>isStackable(a)&&isStackable(b)&&a.definitionId===b.definitionId;
+export function addItem(inventory,item){if(isStackable(item)){let remaining=item.quantity;for(const slot of inventory.slots)if(canStack(slot,item)&&slot.quantity<slot.stackMax){const moved=Math.min(remaining,slot.stackMax-slot.quantity);slot.quantity+=moved;remaining-=moved;if(!remaining)return true}while(remaining){const index=inventory.slots.indexOf(null);if(index<0){item.quantity=remaining;return false}const moved=Math.min(remaining,item.stackMax);inventory.slots[index]={...item,id:uid(item.definitionId),quantity:moved};remaining-=moved}return true}const index=inventory.slots.indexOf(null);if(index<0)return false;inventory.slots[index]=item;return true}
+export function moveItem(inventory,from,to){if(from===to||!inventory.slots[from]||to<0||to>=inventory.slots.length)return false;const source=inventory.slots[from],target=inventory.slots[to];if(canStack(source,target)){const moved=Math.min(source.quantity,target.stackMax-target.quantity);target.quantity+=moved;source.quantity-=moved;if(!source.quantity)inventory.slots[from]=null;return moved>0}[inventory.slots[from],inventory.slots[to]]=[target,source];return true}
+export function splitStack(inventory,index,quantity,targetIndex=inventory.slots.indexOf(null)){const source=inventory.slots[index],amount=Math.floor(Number(quantity));if(!isStackable(source)||amount<1||amount>=source.quantity)return{ok:false,error:`拆分数量应为 1-${(source?.quantity||1)-1}`};if(targetIndex<0||inventory.slots[targetIndex])return{ok:false,error:'没有空格用于拆分'};source.quantity-=amount;inventory.slots[targetIndex]={...source,id:uid(source.definitionId),quantity:amount,new:true};return{ok:true,index:targetIndex,item:inventory.slots[targetIndex]}}
+export function consumeItem(inventory,definitionId,quantity=1){for(let i=0;i<inventory.slots.length;i++){const item=inventory.slots[i];if(item?.definitionId===definitionId&&item.quantity>=quantity){item.quantity-=quantity;if(!item.quantity)inventory.slots[i]=null;return true}}return false}
+export const countItem=(inventory,definitionId)=>inventory.slots.reduce((sum,item)=>sum+(item?.definitionId===definitionId?item.quantity||1:0),0);
+export function equipItem(inventory,index){const item=inventory.slots[index];if(!item||!['weapon','armor'].includes(item.type))return null;const previous=inventory.equipment[item.type];inventory.equipment[item.type]={...item,new:false};inventory.slots[index]=previous;return{item,previous}}
+export function toggleLocked(inventory,index){const item=inventory.slots[index];if(!item)return false;item.locked=!item.locked;if(item.locked)item.junk=false;return item.locked}
+export function toggleJunk(inventory,index){const item=inventory.slots[index];if(!item||item.locked||item.type==='consumable')return false;item.junk=!item.junk;return item.junk}
+const rarityRank=item=>RARITIES.findIndex(r=>r.name===item?.rarity);
+export function sortInventory(inventory,mode='quality'){const occupied=inventory.slots.filter(Boolean);occupied.sort((a,b)=>mode==='type'?a.type.localeCompare(b.type,'zh-CN'):mode==='power'?((b.attack||b.maxHp||0)-(a.attack||a.maxHp||0)):(rarityRank(b)-rarityRank(a)||a.type.localeCompare(b.type,'zh-CN')));inventory.slots=[...occupied,...Array(inventory.slots.length-occupied.length).fill(null)];return inventory}
+export function filteredSlots(inventory,type='all'){return inventory.slots.map((item,index)=>({item,index})).filter(entry=>type==='all'||entry.item?.type===type)}
+export function itemSellValue(item){if(!item||item.type==='consumable')return 0;const rarity=item.rarity==='稀有'?3:item.rarity==='精良'?2:1;return Math.max(3,Math.round(((item.attack||0)*3+(item.maxHp||0))*rarity))}
+export function sellItem(inventory,index){const item=inventory.slots[index];if(!item||item.locked||item.type==='consumable')return{gold:0,item:null};inventory.slots[index]=null;return{gold:itemSellValue(item),item}}
+export function sellAll(inventory,{junkOnly=false}={}){let gold=0,count=0;for(let i=0;i<inventory.slots.length;i++){const item=inventory.slots[i];if(!item||item.locked||item.type==='consumable'||(junkOnly&&!item.junk))continue;const sold=sellItem(inventory,i);gold+=sold.gold;count++}return{gold,count}}
 export const equipmentAttack=inventory=>inventory.equipment.weapon?.attack||0;
 export const equipmentHp=inventory=>inventory.equipment.armor?.maxHp||0;
