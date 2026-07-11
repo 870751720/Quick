@@ -5,3 +5,5 @@
 Node.js 20+ 执行 `npm start`，访问 `http://localhost:8080`。验证使用 `npm test` 和 `npm run check`。当前没有地图碰撞、存档、音频、手柄、日志持久化或遥测；出现复杂关卡工具链、动画状态机或多平台发布需求时迁移专业引擎。
 
 人工体验统一通过 GitHub Pages 进行；本地服务仅供 Agent 必要的工程诊断，不作为用户验收入口。`main` 分支推送通过 GitHub Actions 自动执行测试并部署 Pages。
+
+GitHub Pages 默认可能缓存静态文件约 10 分钟。发布修改过的 JS/CSS 时必须同步递增 `index.html` 中的资源版本参数，并在交付链接附加本次 commit 或版本查询参数，以避免人工体验命中旧缓存。
