@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=17";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=17";
+} from "./combat.js?v=18";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=18";
 import {
   POTION,
   createInventory,
@@ -26,8 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=17";
-import { createGmRegistry } from "./gm.js?v=17";
+} from "./inventory.js?v=18";
+import { createGmRegistry } from "./gm.js?v=18";
+import { createPrologue } from "./prologue.js?v=18";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -370,6 +371,10 @@ const enterGame = () => {
   last = performance.now();
   requestAnimationFrame(loop);
 };
+const prologue = createPrologue(document.querySelector("#prologue"), {
+  onScene: (_, index) => { if (index === 0) sfx.hurt(); else if (index === 1) sfx.heal(); else sfx.menuHover(); },
+  onFinish: () => { reset(); message = "第一幕 · 饥饿　想办法填饱肚子"; enterGame(); },
+});
 continueButton.hidden = !hasSave();
 continueButton.onclick = () => {
   if (restoreGame()) enterGame();
@@ -378,8 +383,10 @@ continueButton.onclick = () => {
 document.querySelector("#new-game").onclick = () => {
   if (hasSave() && !confirm("开始新游戏将覆盖当前进度，是否继续？")) return;
   localStorage.removeItem(SAVE_KEY);
-  reset();
-  enterGame();
+  unlockAudio();
+  stopMenuMusic();
+  menu.classList.add("hidden");
+  prologue.start();
 };
 document.querySelector("#open-settings").onclick = () => { settingsPanel.classList.remove("hidden"); settingsPanel.setAttribute("aria-hidden", "false"); };
 document.querySelector("#close-settings").onclick = () => { settingsPanel.classList.add("hidden"); settingsPanel.setAttribute("aria-hidden", "true"); };

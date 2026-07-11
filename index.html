@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>代号：世界</title>
-    <link rel="icon" href="favicon.svg?v=17" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="icon" href="favicon.svg?v=18" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=18">
+    <link rel="stylesheet" href="prologue.css?v=18">
   </head>
   <body>
     <main>
@@ -38,7 +39,12 @@
           <button id="close-settings" type="button">返回</button>
         </div>
       </section>
+      <section id="prologue" class="hidden" aria-label="第一幕过场" aria-hidden="true" data-scene="dark">
+        <div class="prologue-art" aria-hidden="true"></div><div class="prologue-shade" aria-hidden="true"></div>
+        <button class="prologue-skip" type="button">跳过</button>
+        <div class="prologue-copy"><p class="prologue-kicker"></p><p class="prologue-text"></p><p class="prologue-thought"></p><div class="prologue-progress"></div><button class="prologue-next" type="button">继续 <span>›</span></button></div>
+      </section>
     </main>
-    <script type="module" src="src/game.js?v=17"></script>
+    <script type="module" src="src/game.js?v=18"></script>
   </body>
 </html>
