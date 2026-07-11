@@ -10,6 +10,8 @@ export const sfx={
   drop(){tone(760,420,.09,'square',.025);tone(980,520,.12,'triangle',.025,.05)},
   coin(){tone(880,1320,.1,'square',.035);tone(1320,1760,.08,'triangle',.025,.07)},
   heal(){tone(420,720,.18,'sine',.05);tone(620,980,.24,'triangle',.035,.1)},
+  pickup(){tone(520,760,.12,'triangle',.035)},
+  level(){tone(330,660,.18,'square',.04);tone(520,1040,.24,'triangle',.05,.14);tone(780,1560,.3,'sine',.04,.3)},
   victory(){tone(330,440,.18,'triangle',.05);tone(440,660,.28,'triangle',.05,.16)},
   defeat(){tone(180,120,.25,'triangle',.06);tone(120,55,.45,'sawtooth',.045,.2)}
 };
