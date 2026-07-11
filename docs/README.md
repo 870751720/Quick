@@ -10,4 +10,6 @@
 
 | 文档名称 | 用途 | 适用范围 | 维护状态 | 路径 |
 | --- | --- | --- | --- | --- |
+| 《余烬荒原》首个可玩切片 | 玩法目标、数值、反馈与验证假设 | 首个战斗原型 | 生效中 | [`design/vertical-slice.md`](design/vertical-slice.md) |
+| 浏览器原型技术说明 | 技术栈、模块边界、运行方式与迁移条件 | 浏览器原型 | 生效中 | [`technical/browser-prototype.md`](technical/browser-prototype.md) |
 | 玩家体验设计指南 | 约束玩法设计从玩家视角评估乐趣、心流、数值与成长 | 所有面向玩家的玩法、系统、内容和交互设计 | 生效中 | [`design/player-experience.md`](design/player-experience.md) |
