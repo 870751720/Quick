@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=19";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=19";
+} from "./combat.js?v=20";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=20";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=19";
-import { createGmRegistry } from "./gm.js?v=19";
-import { SCENE, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=19";
+} from "./inventory.js?v=20";
+import { createGmRegistry } from "./gm.js?v=20";
+import { SCENE, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=20";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -46,6 +46,7 @@ const art = {
   dirt: load("assets/environment/puny/Dirt.png"),
   grass: load("assets/environment/puny/Grass1.png"),
   tree: load("assets/environment/puny/Tree.png"),
+  world: load("assets/environment/puny/punyworld-overworld-tileset.png"),
   potions: load("assets/items/shade/potions.png"),
   weapons: load("assets/items/shade/weapons.png"),
   armours: load("assets/items/shade/armours.png"),

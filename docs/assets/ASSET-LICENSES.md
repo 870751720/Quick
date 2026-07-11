@@ -38,3 +38,15 @@
 - 许可与使用范围：项目生成资产，可在本项目中使用、修改与分发；无需第三方署名
 - 提示词摘要：表面宁静的黑暗奇幻村庄、农田、商店、落魄青年与远处庄园；暖色夕照、像素画、左侧预留菜单负空间，不含文字、标志、水印或既有作品角色
 - 工程检查：PNG，1672×941，约 2.4 MB；无脚本、宏、元数据执行内容；仅作为静态背景，由 CSS 执行低成本缩放动效
+
+## Puny World Overworld Tileset
+
+- 文件：`assets/environment/puny/punyworld-overworld-tileset.png`
+- 用途：场景 `100` 的道路、村屋、商店、作物和环境装饰
+- 作者：Shade
+- 来源：https://opengameart.org/content/16x16-puny-world-tileset
+- 原始文件：https://opengameart.org/sites/default/files/punyworld-overworld-tileset_0.png
+- 许可证：CC0 1.0 Universal（https://creativecommons.org/publicdomain/zero/1.0/）
+- 下载时间：2026-07-12
+- 使用范围：允许商业与非商业使用、修改和再分发，无需署名
+- 工程检查：PNG 精灵表，约 100 KB；16×16 网格，包含地表、道路、水体、建筑和资源节点；与现有 Shade/Puny 角色及环境资源同源，无脚本或可执行内容
