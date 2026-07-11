@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=21";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=21";
+} from "./combat.js?v=22";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=22";
 import {
   POTION,
   createInventory,
@@ -26,9 +26,9 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=21";
-import { createGmRegistry } from "./gm.js?v=21";
-import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoom, drawPlayerRoomScene, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=21";
+} from "./inventory.js?v=22";
+import { createGmRegistry } from "./gm.js?v=22";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=22";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -119,7 +119,7 @@ const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y),
 
 addEventListener("keydown", (event) => {
   if (currentSceneId === SCENE.PLAYER_ROOM && roomScene.phase !== "play" && (event.code === "Space" || event.code === "Escape")) { event.preventDefault(); roomScene.elapsed = 9; return; }
-  if (currentSceneId === SCENE.PLAYER_ROOM && event.code === "KeyE") { interactPlayerRoom(roomScene, player); return; }
+  if (currentSceneId === SCENE.PLAYER_ROOM && event.code === "KeyE") { interactPlayerRoomV2(roomScene, player); return; }
   if (currentSceneId === SCENE.VILLAGE_OUTSKIRTS && villageScene.phase !== "play" && (event.code === "Space" || event.code === "Escape")) {
     event.preventDefault();
     villageScene.elapsed = 10;
@@ -1327,7 +1327,7 @@ function drawDraggedItem() {
 }
 const drawWorld = draw;
 draw = () => {
-  if (currentSceneId === SCENE.PLAYER_ROOM) { drawPlayerRoomScene(ctx,roomScene,player,art); drawGm(); return; }
+  if (currentSceneId === SCENE.PLAYER_ROOM) { drawPlayerRoomSceneV2(ctx,roomScene,player,art); drawGm(); return; }
   if (currentSceneId === SCENE.VILLAGE_OUTSKIRTS) {
     drawVillageWakeScene(ctx, villageScene, player, art, performance.now());
     drawGm();
