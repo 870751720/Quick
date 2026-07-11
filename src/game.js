@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=16";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings } from "./audio.js?v=16";
+} from "./combat.js?v=17";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=17";
 import {
   POTION,
   createInventory,
@@ -26,8 +26,8 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=16";
-import { createGmRegistry } from "./gm.js?v=16";
+} from "./inventory.js?v=17";
+import { createGmRegistry } from "./gm.js?v=17";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -363,13 +363,14 @@ const restoreGame = () => {
 };
 const enterGame = () => {
   unlockAudio();
+  sfx.menuSelect();
+  stopMenuMusic();
   menu.classList.add("hidden");
   running = true;
   last = performance.now();
   requestAnimationFrame(loop);
 };
-continueButton.disabled = !hasSave();
-continueButton.title = hasSave() ? "继续上次进度" : "暂无存档";
+continueButton.hidden = !hasSave();
 continueButton.onclick = () => {
   if (restoreGame()) enterGame();
   else menuHint.textContent = "存档无法读取，请开始新游戏";
@@ -386,6 +387,11 @@ const audioSettings = getAudioSettings();
 volumeInput.value = Math.round(audioSettings.volume * 100); muteInput.checked = audioSettings.muted; volumeValue.value = `${volumeInput.value}%`;
 const updateAudioSettings = () => { volumeValue.value = `${volumeInput.value}%`; setAudioSettings({ volume: Number(volumeInput.value) / 100, muted: muteInput.checked }); };
 volumeInput.oninput = updateAudioSettings; muteInput.onchange = updateAudioSettings;
+document.querySelectorAll(".menu-actions button, .settings-card button").forEach((button) => {
+  button.addEventListener("pointerenter", () => { unlockAudio(); startMenuMusic(); sfx.menuHover(); }, { once: true });
+  button.addEventListener("click", () => sfx.menuSelect());
+});
+document.addEventListener("pointerdown", () => { unlockAudio(); startMenuMusic(); }, { once: true });
 addEventListener("beforeunload", persistGame);
 setInterval(persistGame, 5000);
 
