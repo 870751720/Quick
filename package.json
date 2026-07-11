@@ -1,1 +1,1 @@
-{"name":"ashen-wastes","private":true,"type":"module","scripts":{"start":"node scripts/serve.js","test":"node --test","check":"node --check src/game.js && node --check src/combat.js && node --check src/audio.js"}}
+{"name":"ashen-wastes","private":true,"type":"module","scripts":{"start":"node scripts/serve.js","test":"node --test","check":"node --check src/game.js && node --check src/combat.js && node --check src/audio.js && node --check src/inventory.js"}}
