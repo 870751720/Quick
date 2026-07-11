@@ -1,23 +1,20 @@
 # 资产来源与许可证清单
 
-更新：2026-07-11。所有下载资产进入项目前均检查格式与许可证；不得用本清单之外的网络资产替换现有文件。
+更新：2026-07-11。所有下载资产进入项目前均检查格式与许可证。
 
-## Hero character sprite sheet
+## Puny Characters
 
-- 文件：`assets/characters/hero-fry-cc0.png`
-- 作者：Fry
-- 来源：https://opengameart.org/content/hero-character-sprite-sheet
-- 原文件：https://opengameart.org/sites/default/files/player_41.png
+- 文件：`assets/characters/warrior-blue.png`、`assets/characters/orc-soldier-red.png`、`assets/environment/puny/*`
+- 作者：Shade
+- 来源：https://opengameart.org/content/puny-characters
+- 原始包：https://opengameart.org/sites/default/files/puny-charactersorcs_included.zip
 - 许可证：CC0 1.0 Universal
 - 许可证链接：https://creativecommons.org/publicdomain/zero/1.0/
 - 下载时间：2026-07-11
-- 使用范围：允许商业及非商业使用、修改和再分发；无需署名。项目仍保留作者和来源以便审计。
-- 工程检查：PNG，13.6 KiB，40×64 帧；仅含四方向待机/行走，不得用于宣称存在攻击动画。
+- 使用范围：允许商业及非商业使用、修改和再分发；无需署名。
+- 工程检查：PNG；角色为 32×32 帧、8 方向，包含待机、移动、剑击、弓/法杖、受击与死亡；当前只接入待机、移动和剑击。玩家、敌人和环境来自同一资源包。
 
-## Ruined clearing
+## 已撤销资产
 
-- 文件：`assets/environment/ruined-clearing.png`
-- 来源：OpenAI 内置图像生成工具，项目原创生成素材
-- 生成时间：2026-07-11
-- 生成提示摘要：严格俯视的暗色奇幻遗迹林地战斗场景，无角色、UI、文字、水印或既有作品元素。
-- 使用范围：项目内背景；后续可修改或替换。
+- 2026-07-11：Fry 的 `hero-fry-cc0.png` 因缺少攻击动画且与环境风格不统一而移除。
+- 2026-07-11：生成背景 `ruined-clearing.png` 因与像素角色风格不统一而移除。
