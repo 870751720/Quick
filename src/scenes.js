@@ -18,12 +18,16 @@ const ROOM_WALL_COLLIDERS=Object.freeze([
 ]);
 export const ROOM_COLLIDERS=Object.freeze([...ROOM_WALL_COLLIDERS,...ROOM_OBJECTS.map(object=>object.collision)]);
 
-export function roomPositionBlocked(x, y, radius = 25) {
-  return ROOM_COLLIDERS.some((box) => x + radius > box.x && x - radius < box.x + box.w && y + radius > box.y && y - radius < box.y + box.h);
+export const PLAYER_FOOTPRINT=Object.freeze({offsetY:34,radius:18});
+export const playerFootPosition=(player)=>({x:player.x,y:player.y+PLAYER_FOOTPRINT.offsetY});
+
+export function roomPositionBlocked(x, y, radius = PLAYER_FOOTPRINT.radius) {
+  const footY=y+PLAYER_FOOTPRINT.offsetY;
+  return ROOM_COLLIDERS.some((box) => x + radius > box.x && x - radius < box.x + box.w && footY + radius > box.y && footY - radius < box.y + box.h);
 }
 
 export function drawRoomCollisionDebug(ctx, player) {
-  ctx.save();ctx.lineWidth=3;ctx.strokeStyle='#ff4059';ctx.fillStyle='rgba(255,40,72,.18)';for(const box of ROOM_COLLIDERS){ctx.fillRect(box.x,box.y,box.w,box.h);ctx.strokeRect(box.x,box.y,box.w,box.h)}ctx.strokeStyle='#42e8ff';ctx.fillStyle='rgba(66,232,255,.18)';ctx.beginPath();ctx.arc(player.x,player.y,25,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.setLineDash([10,7]);ctx.strokeStyle='#65ff72';ctx.strokeRect(790,640,155,80);ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 15px monospace';ctx.textAlign='left';ctx.fillText('RED: collision  CYAN: player  GREEN: exit',215,28);ctx.restore();
+  const foot=playerFootPosition(player);ctx.save();ctx.lineWidth=3;ctx.strokeStyle='#ff4059';ctx.fillStyle='rgba(255,40,72,.18)';for(const box of ROOM_COLLIDERS){ctx.fillRect(box.x,box.y,box.w,box.h);ctx.strokeRect(box.x,box.y,box.w,box.h)}ctx.strokeStyle='#42e8ff';ctx.fillStyle='rgba(66,232,255,.18)';ctx.beginPath();ctx.arc(foot.x,foot.y,PLAYER_FOOTPRINT.radius,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.setLineDash([10,7]);ctx.strokeStyle='#65ff72';ctx.strokeRect(790,640,155,80);ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 15px monospace';ctx.textAlign='left';ctx.fillText('RED: collision  CYAN: player feet  GREEN: exit',215,28);ctx.restore();
 }
 
 export function updatePlayerRoomScene(scene, dt, player, keys) {
@@ -34,7 +38,7 @@ export function updatePlayerRoomScene(scene, dt, player, keys) {
   let x=(keys.has("KeyD")?1:0)-(keys.has("KeyA")?1:0),y=(keys.has("KeyS")?1:0)-(keys.has("KeyW")?1:0),l=Math.hypot(x,y)||1;
   const nextX=player.x+x/l*145*dt,nextY=player.y+y/l*145*dt;
   player.moving=!!(x||y);if(!roomPositionBlocked(nextX,player.y))player.x=nextX;if(!roomPositionBlocked(player.x,nextY))player.y=nextY;if(x||y)player.facing=Math.atan2(y,x);
-  return player.x>790&&player.x<945&&player.y>640;
+  const foot=playerFootPosition(player);return foot.x>790&&foot.x<945&&foot.y>640;
 }
 
 export const createVillageWakeScene = (skip = false) => ({
@@ -150,7 +154,7 @@ export function drawPlayerRoomSceneV2(ctx,scene,player,art){
   ctx.strokeStyle='#241811';ctx.lineWidth=7;ctx.strokeRect(170,70,940,610);
   ctx.fillStyle='#17120e';ctx.fillRect(800,650,160,70);ctx.strokeStyle='#936b3b';ctx.lineWidth=5;ctx.strokeRect(810,640,140,80);
   const wake=Math.max(0,Math.min(1,(scene.elapsed-6)/3));
-  const layers=[...ROOM_OBJECTS.map(object=>({sortY:object.sortY,draw:()=>drawRoomObject(ctx,object,art)})),{sortY:player.y,draw:()=>drawRoomActor(ctx,player,art,wake)}].sort((a,b)=>a.sortY-b.sortY);
+  const foot=playerFootPosition(player),layers=[...ROOM_OBJECTS.map(object=>({sortY:object.sortY,draw:()=>drawRoomObject(ctx,object,art)})),{sortY:foot.y,draw:()=>drawRoomActor(ctx,player,art,wake)}].sort((a,b)=>a.sortY-b.sortY);
   for(const layer of layers)layer.draw();
   let words='';if(scene.phase==='sleep'&&scene.elapsed>3)words='肚子饿饿的……';else if(scene.phase==='wake')words='这是……谁的房间？';else if(scene.bubbleUntil>scene.elapsed)words=scene.bubble;else if(scene.phase==='play'&&scene.elapsed<14)words='先下床看看。';if(words)bubble(ctx,player.x,player.y,words);
   if(scene.phase==='play'){const near=nearestRoomHotspot(player);if(near.distance<165)interactionPrompt(ctx,near);if(player.x>760&&player.x<975&&player.y>570)interactionPrompt(ctx,{x:868,y:640,label:'离开房间'})}

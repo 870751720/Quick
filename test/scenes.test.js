@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SCENE, ROOM_OBJECTS, ROOM_COLLIDERS, createPlayerRoomScene, createVillageWakeScene, updateVillageWakeScene, roomPositionBlocked, roomActorFrame, interactPlayerRoomV2 } from "../src/scenes.js";
+import { SCENE, ROOM_OBJECTS, ROOM_COLLIDERS, PLAYER_FOOTPRINT, playerFootPosition, createPlayerRoomScene, createVillageWakeScene, updateVillageWakeScene, roomPositionBlocked, roomActorFrame, interactPlayerRoomV2 } from "../src/scenes.js";
 
 test("场景编号稳定且互不重复", () => assert.equal(new Set(Object.values(SCENE)).size, Object.values(SCENE).length));
 test("村庄苏醒演出结束后才允许移动", () => { const scene=createVillageWakeScene(),player={x:100,y:100},keys=new Set(["KeyD"]);updateVillageWakeScene(scene,1,player,keys);assert.equal(player.x,100);updateVillageWakeScene(scene,10,player,keys);assert.ok(player.x>100);assert.equal(scene.phase,"play"); });
@@ -15,6 +15,12 @@ test("房间碰撞按脚点阻止实体并保留通道", () => {
   assert.equal(roomPositionBlocked(805,320),false,"壁炉与桌子之间保留通道");
   assert.equal(roomPositionBlocked(900,440),true,"桌脚区域不可穿越");
   assert.equal(roomPositionBlocked(900,340),false,"桌后区域按 Y 排序表现");
+});
+test("玩家碰撞体仅覆盖立绘脚部",()=>{
+  assert.deepEqual(playerFootPosition({x:500,y:300}),{x:500,y:334});
+  assert.equal(PLAYER_FOOTPRINT.radius,18);
+  assert.equal(roomPositionBlocked(600,68),true,"脚部接触上墙时阻止");
+  assert.equal(roomPositionBlocked(800,430),false,"角色上半身可与桌面视觉重叠");
 });
 test("房间角色按八方向选择行走与待机帧", () => {
   assert.deepEqual(roomActorFrame(-Math.PI/2,false,0),{row:4,column:0});
