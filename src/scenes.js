@@ -123,14 +123,15 @@ export function interactPlayerRoomV2(scene, player) {
   return true;
 }
 
+export const interactionPromptScale=(now)=>1+Math.sin(now/900)*.035;
+
 function interactionPrompt(ctx, point) {
-  const now=performance.now(),float=Math.sin(now/260)*4,glow=.55+Math.sin(now/190)*.18;
-  ctx.save();ctx.translate(point.x,point.y-55+float);ctx.shadowColor='#f0c978';ctx.shadowBlur=12*glow;
-  ctx.fillStyle=`rgba(237,195,105,${glow})`;ctx.rotate(Math.PI/4);ctx.fillRect(-5,-5,10,10);ctx.rotate(-Math.PI/4);ctx.shadowBlur=0;
-  ctx.strokeStyle='rgba(235,205,139,.45)';ctx.beginPath();ctx.moveTo(0,8);ctx.lineTo(0,19);ctx.stroke();
-  ctx.fillStyle='rgba(25,22,17,.94)';ctx.strokeStyle='#c9a665';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(-18,22,36,28,6);ctx.fill();ctx.stroke();
-  ctx.fillStyle='#fff1cb';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 15px system-ui';ctx.fillText('E',0,36);
-  ctx.font='12px system-ui';ctx.fillStyle='#fff4d7';ctx.fillText(point.label,0,64);ctx.restore();
+  const scale=interactionPromptScale(performance.now());
+  ctx.save();ctx.translate(point.x,point.y-28);ctx.scale(scale,scale);
+  ctx.shadowColor='rgba(240,201,120,.42)';ctx.shadowBlur=7;
+  ctx.fillStyle='rgba(25,22,17,.94)';ctx.strokeStyle='#c9a665';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(-18,-14,36,28,6);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#fff1cb';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 15px system-ui';ctx.fillText('E',0,0);
+  ctx.font='12px system-ui';ctx.fillStyle='#fff4d7';ctx.fillText(point.label,0,23);ctx.restore();
 }
 
 export function roomActorFrame(facing, moving, now=performance.now()) {

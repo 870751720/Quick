@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SCENE, ROOM_OBJECTS, ROOM_COLLIDERS, PLAYER_FOOTPRINT, playerFootPosition, createPlayerRoomScene, createVillageWakeScene, updateVillageWakeScene, roomPositionBlocked, roomActorFrame, interactPlayerRoomV2 } from "../src/scenes.js";
+import { SCENE, ROOM_OBJECTS, ROOM_COLLIDERS, PLAYER_FOOTPRINT, playerFootPosition, interactionPromptScale, createPlayerRoomScene, createVillageWakeScene, updateVillageWakeScene, roomPositionBlocked, roomActorFrame, interactPlayerRoomV2 } from "../src/scenes.js";
 
 test("场景编号稳定且互不重复", () => assert.equal(new Set(Object.values(SCENE)).size, Object.values(SCENE).length));
 test("村庄苏醒演出结束后才允许移动", () => { const scene=createVillageWakeScene(),player={x:100,y:100},keys=new Set(["KeyD"]);updateVillageWakeScene(scene,1,player,keys);assert.equal(player.x,100);updateVillageWakeScene(scene,10,player,keys);assert.ok(player.x>100);assert.equal(scene.phase,"play"); });
@@ -35,6 +35,12 @@ test("房间调查仅在交互点有效距离内响应",()=>{
   assert.equal(scene.bubble,"", "空按 E 不产生兜底气泡");
   assert.equal(interactPlayerRoomV2(scene,{x:520,y:220}),true);
   assert.ok(scene.bubble.length>0);
+});
+test("交互键帽仅作慢速低幅呼吸缩放",()=>{
+  assert.equal(interactionPromptScale(0),1);
+  assert.equal(interactionPromptScale(450),1+Math.sin(.5)*.035);
+  assert.ok(interactionPromptScale(900*Math.PI/2)<=1.035);
+  assert.ok(interactionPromptScale(900*Math.PI*1.5)>=.965);
 });
 test("家具碰撞由场景对象数据生成",()=>{
   for(const object of ROOM_OBJECTS){
