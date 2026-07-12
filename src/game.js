@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=36";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=36";
+} from "./combat.js?v=37";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=37";
 import {
   POTION,
   createInventory,
@@ -26,10 +26,10 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=36";
-import { createGmRegistry } from "./gm.js?v=36";
-import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=36";
-import { HUNGER_RULES, updateHunger, drawHungerHud } from "./hunger.js?v=36";
+} from "./inventory.js?v=37";
+import { createGmRegistry } from "./gm.js?v=37";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=37";
+import { HUNGER_RULES, updateHunger, drawHungerHud } from "./hunger.js?v=37";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
