@@ -13,3 +13,11 @@ test("new game overwrite uses in-game confirmation UI", () => {
   assert.match(game, /confirmNewGameButton\.onclick = startNewGame/);
   assert.match(game, /event\.key === "Escape"/);
 });
+
+test("browser entry and transitive modules share one cache version",()=>{
+  const entryVersion=html.match(/src="src\/game\.js\?v=(\d+)"/)?.[1];
+  const moduleVersions=[...game.matchAll(/from "\.\/[^"?]+\.js\?v=(\d+)"/g)].map((match)=>match[1]);
+  assert.ok(entryVersion,"entry script has a cache version");
+  assert.ok(moduleVersions.length>0,"game imports versioned modules");
+  assert.deepEqual(new Set(moduleVersions),new Set([entryVersion]));
+});
