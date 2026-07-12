@@ -3,13 +3,13 @@ export const SCENE = Object.freeze({ VILLAGE_OUTSKIRTS: 100, PLAYER_ROOM: 101, C
 export const createPlayerRoomScene = (skip = false) => ({ id: SCENE.PLAYER_ROOM, elapsed: skip ? 10 : 0, phase: skip ? "play" : "fade", bubble: "" });
 
 export const ROOM_OBJECTS=Object.freeze([
-  {id:'bed',image:'roomBed',x:230,y:285,w:96,h:96,scale:2,alpha:{x:24,y:6,w:48,h:82},footStart:0},
-  {id:'cupboard',image:'roomCabinet',x:390,y:95,w:64,h:96,scale:2,alpha:{x:11,y:16,w:42,h:66},footStart:.7},
-  {id:'fireplace',image:'roomFireplace',x:690,y:60,w:128,h:128,scale:1.8,alpha:{x:20,y:2,w:89,h:108},footStart:.68},
-  {id:'table',image:'roomTable',x:760,y:375,w:128,h:32,scale:1.7,alpha:{x:20,y:0,w:88,h:32},footStart:.5},
-  {id:'chair',image:'roomChair',x:845,y:455,w:32,h:32,scale:1.7,alpha:{x:4,y:0,w:19,h:32},footStart:.5},
-  {id:'chest',image:'roomChest',x:970,y:515,w:64,h:32,scale:1.7,alpha:{x:15,y:9,w:34,h:23},footStart:.35},
-  {id:'barrel',image:'roomBarrel',x:970,y:145,w:32,h:64,scale:1.7,alpha:{x:1,y:26,w:30,h:37},footStart:.35},
+  {id:'bed',image:'roomThings',source:{x:129,y:66,w:63,h:14},x:230,y:330,w:63,h:14,scale:2.3,alpha:{x:0,y:0,w:63,h:14},footStart:.45},
+  {id:'cupboard',image:'roomThings',source:{x:64,y:80,w:16,h:16},x:405,y:135,w:16,h:16,scale:4,alpha:{x:0,y:0,w:16,h:16},footStart:.55},
+  {id:'fireplace',image:'roomThings',source:{x:80,y:80,w:16,h:16},x:700,y:130,w:16,h:16,scale:4,alpha:{x:0,y:0,w:16,h:16},footStart:.55},
+  {id:'table',image:'roomThings',source:{x:149,y:50,w:43,h:14},x:760,y:390,w:43,h:14,scale:3,alpha:{x:0,y:0,w:43,h:14},footStart:.45},
+  {id:'chair',image:'roomThings',source:{x:130,y:16,w:12,h:29},x:845,y:455,w:12,h:29,scale:3,alpha:{x:0,y:0,w:12,h:29},footStart:.62},
+  {id:'chest',image:'roomChests',source:{x:0,y:0,w:16,h:16},x:965,y:520,w:16,h:16,scale:3.5,alpha:{x:0,y:2,w:16,h:14},footStart:.45},
+  {id:'barrel',image:'roomThings',source:{x:64,y:50,w:16,h:14},x:970,y:170,w:16,h:14,scale:3.5,alpha:{x:0,y:0,w:16,h:14},footStart:.45},
 ]);
 for(const object of ROOM_OBJECTS){const a=object.alpha,s=object.scale,fy=a.y+a.h*object.footStart;object.collision=Object.freeze({x:object.x+a.x*s,y:object.y+fy*s,w:a.w*s,h:a.h*(1-object.footStart)*s});object.sortY=object.collision.y+object.collision.h}
 const ROOM_WALL_COLLIDERS=Object.freeze([
@@ -123,11 +123,11 @@ export function interactPlayerRoomV2(scene, player) {
   return true;
 }
 
-export const interactionPromptScale=(now)=>1+Math.sin(now/900)*.035;
+export const interactionPromptOffset=(now)=>Math.sin(now/700)*1.5;
 
 function interactionPrompt(ctx, point) {
-  const scale=interactionPromptScale(performance.now());
-  ctx.save();ctx.translate(point.x,point.y-28);ctx.scale(scale,scale);
+  const offset=interactionPromptOffset(performance.now());
+  ctx.save();ctx.translate(point.x,point.y-28+offset);
   ctx.shadowColor='rgba(240,201,120,.42)';ctx.shadowBlur=7;
   ctx.fillStyle='rgba(25,22,17,.94)';ctx.strokeStyle='#c9a665';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(-18,-14,36,28,6);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
   ctx.fillStyle='#fff1cb';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 15px system-ui';ctx.fillText('E',0,0);
@@ -140,7 +140,7 @@ export function roomActorFrame(facing, moving, now=performance.now()) {
 }
 
 function drawRoomObject(ctx,object,art){
-  ctx.drawImage(art[object.image],object.x,object.y,object.w*object.scale,object.h*object.scale);
+  const source=object.source;ctx.drawImage(art[object.image],source.x,source.y,source.w,source.h,object.x,object.y,object.w*object.scale,object.h*object.scale);
 }
 function drawRoomActor(ctx,player,art,wake){
   const size=118,{row,column}=roomActorFrame(player.facing,player.moving);
@@ -149,10 +149,10 @@ function drawRoomActor(ctx,player,art,wake){
 }
 export function drawPlayerRoomSceneV2(ctx,scene,player,art){
   ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle='#11100d';ctx.fillRect(0,0,1280,720);
-  for(let y=120;y<680;y+=64)for(let x=170;x<1110;x+=64)ctx.drawImage(art.roomTiles,992,32,32,32,x,y,64,64);
-  ctx.fillStyle='#271a19';ctx.fillRect(170,55,940,85);ctx.fillRect(170,120,28,560);ctx.fillRect(1082,120,28,560);
-  for(let x=198;x<1082;x+=64)ctx.drawImage(art.roomTiles,576,64,32,32,x,76,64,64);
-  ctx.strokeStyle='#241811';ctx.lineWidth=7;ctx.strokeRect(170,70,940,610);
+  ctx.fillStyle='#513b35';ctx.fillRect(170,70,940,610);
+  for(let y=120;y<680;y+=64)for(let x=198;x<1082;x+=64)ctx.drawImage(art.roomWalls,240,144,48,48,x,y,64,64);
+  for(let x=170;x<1110;x+=64){ctx.drawImage(art.roomWalls,336,144,48,48,x,70,64,64);ctx.drawImage(art.roomWalls,336,144,48,48,x,616,64,64)}
+  for(let y=70;y<680;y+=64){ctx.drawImage(art.roomWalls,336,144,48,48,170,y,64,64);ctx.drawImage(art.roomWalls,336,144,48,48,1046,y,64,64)}
   ctx.fillStyle='#17120e';ctx.fillRect(800,650,160,70);ctx.strokeStyle='#936b3b';ctx.lineWidth=5;ctx.strokeRect(810,640,140,80);
   const wake=Math.max(0,Math.min(1,(scene.elapsed-6)/3));
   const foot=playerFootPosition(player),layers=[...ROOM_OBJECTS.map(object=>({sortY:object.sortY,draw:()=>drawRoomObject(ctx,object,art)})),{sortY:foot.y,draw:()=>drawRoomActor(ctx,player,art,wake)}].sort((a,b)=>a.sortY-b.sortY);

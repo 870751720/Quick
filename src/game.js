@@ -4,8 +4,8 @@ import {
   grantXp,
   xpNeeded,
   attackAtLevel as baseAttackAtLevel,
-} from "./combat.js?v=35";
-import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=35";
+} from "./combat.js?v=36";
+import { sfx, unlockAudio, getAudioSettings, setAudioSettings, startMenuMusic, stopMenuMusic } from "./audio.js?v=36";
 import {
   POTION,
   createInventory,
@@ -26,10 +26,10 @@ import {
   sellAll,
   equipmentAttack,
   equipmentHp,
-} from "./inventory.js?v=35";
-import { createGmRegistry } from "./gm.js?v=35";
-import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=35";
-import { HUNGER_RULES, updateHunger, drawHungerHud } from "./hunger.js?v=35";
+} from "./inventory.js?v=36";
+import { createGmRegistry } from "./gm.js?v=36";
+import { SCENE, createPlayerRoomScene, updatePlayerRoomScene, interactPlayerRoomV2, drawPlayerRoomSceneV2, drawRoomCollisionDebug, createVillageWakeScene, updateVillageWakeScene, drawVillageWakeScene } from "./scenes.js?v=36";
+import { HUNGER_RULES, updateHunger, drawHungerHud } from "./hunger.js?v=36";
 
 const canvas = document.querySelector("#game"),
   ctx = canvas.getContext("2d"),
@@ -48,14 +48,9 @@ const art = {
   grass: load("assets/environment/puny/Grass1.png"),
   tree: load("assets/environment/puny/Tree.png"),
   world: load("assets/environment/puny/punyworld-overworld-tileset.png"),
-  roomTiles: load("assets/environment/epic-interior/tileset.png"),
-  roomBed: load("assets/environment/epic-interior/bed.png"),
-  roomCabinet: load("assets/environment/epic-interior/cabinet.png"),
-  roomFireplace: load("assets/environment/epic-interior/fireplace.png"),
-  roomTable: load("assets/environment/epic-interior/table.png"),
-  roomChair: load("assets/environment/epic-interior/chair.png"),
-  roomChest: load("assets/environment/epic-interior/chest.png"),
-  roomBarrel: load("assets/environment/epic-interior/barrel.png"),
+  roomWalls: load("assets/environment/puny-interior-walls.png"),
+  roomThings: load("assets/environment/puny-interior-things.png"),
+  roomChests: load("assets/environment/puny-interior-chests.png"),
   potions: load("assets/items/shade/potions.png"),
   weapons: load("assets/items/shade/weapons.png"),
   armours: load("assets/items/shade/armours.png"),

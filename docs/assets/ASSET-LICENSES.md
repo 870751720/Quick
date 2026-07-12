@@ -93,6 +93,8 @@
 
 ## Epic RPG World — Free House Interiors
 
+> 状态：已废弃并从仓库移除。2026-07-12 因与 Shade/Puny 主角的像素密度、轮廓和色板不匹配，不再参与运行时绘制。
+
 - 文件：`assets/environment/epic-interior/tileset.png`、`bed.png`、`cabinet.png`、`fireplace.png`、`table.png`、`chair.png`、`chest.png`、`barrel.png`
 - 用途：场景 `101` 的统一墙地面与全部家具 Sprite
 - 作者：RafaelMatos
@@ -102,3 +104,16 @@
 - 下载时间：2026-07-12
 - 使用范围：仅作为本游戏场景运行资源随项目分发，不作为独立素材包提供
 - 工程检查：ZIP 约 2 MB，仅选取 PNG 图集及 7 个独立家具 Sprite；未执行任何脚本、插件或可执行文件；家具透明边界已逐像素检查并记录到场景对象数据
+
+## 16x16 miniworld+ Indoor Update
+
+- 文件：`assets/environment/puny-interior-walls.png`、`puny-interior-things.png`、`puny-interior-chests.png`
+- 用途：场景 `101` 的墙地面、家具、容器和室内装饰
+- 作者：octoshrimpy；基于 Shade 的 MiniWorld 系列扩展
+- 来源：https://octoshrimpy.itch.io/miniworld-tiles
+- 原始下载：`miniworld +__rainbow-refresh.zip`
+- 许可证：Creative Commons Attribution 4.0 International（按 itch.io 资产许可元数据的更严格标注执行）
+- 许可证链接：https://creativecommons.org/licenses/by/4.0/
+- 下载时间：2026-07-12
+- 使用范围：允许商业及非商业使用、修改和分发；发布时保留作者、来源与 CC BY 4.0 许可链接
+- 工程检查：PNG 像素图集，16×16 基础网格，与玩家 Shade/Puny 角色同源系；三个运行时文件合计约 70 KB，不含脚本、宏或可执行内容
